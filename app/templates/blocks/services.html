@@ -1,0 +1,11 @@
+<section class="bg-gray-100 py-12 px-4">
+  <h2 class="text-3xl font-semibold text-center mb-6">{{ heading or 'Our Services' }}</h2>
+  <p class="text-center mb-8">{{ short_copy or original_text or text }}</p>
+  {% if img_urls %}
+    <div class="flex flex-wrap justify-center gap-4">
+      {% for img in img_urls %}
+        <img src="{{ img }}" alt="" class="rounded shadow max-h-32"/>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section> 

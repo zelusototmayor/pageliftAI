@@ -1,0 +1,8 @@
+<section class="bg-white py-12 px-4">
+  <h2 class="text-3xl font-semibold text-center mb-6">{{ heading or 'Gallery' }}</h2>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {% for img in img_urls %}
+      <img src="{{ img }}" alt="" class="rounded shadow"/>
+    {% endfor %}
+  </div>
+</section> 

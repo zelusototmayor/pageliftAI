@@ -1,0 +1,7 @@
+<section class="bg-gray-200 py-8 px-4">
+  <h2 class="text-2xl font-semibold mb-2">{{ heading or 'Section' }}</h2>
+  <p>{{ short_copy or original_text or text }}</p>
+  {% if img_urls %}
+    <img src="{{ img_urls[0] }}" alt="" class="mx-auto rounded max-h-32"/>
+  {% endif %}
+</section> 
