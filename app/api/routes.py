@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from app.models import Project, Job
+from app.models import Project, Job, JobStatus
 from app.config import settings
 from app.services.tasks import celery_app, pipeline_task
 import os
@@ -50,7 +50,7 @@ async def get_job(job_id: int):
         return {
             "job_id": job.id,
             "status": job.status,
-            "download_url": job.output_zip_url if job.status == "complete" else None,
+            "download_url": job.output_zip_url if job.status == JobStatus.complete else None,
             "error": job.error,
             "original_url": project.url if project else None,
         }
@@ -108,7 +108,7 @@ async def preview_site(job_id: int):
         job = await db.get(Job, job_id)
         if not job:
             raise HTTPException(status_code=404, detail="Job not found")
-        if job.status != "complete" or not job.output_zip_url:
+        if job.status != JobStatus.complete or not job.output_zip_url:
             raise HTTPException(status_code=400, detail="Job not complete or no output available")
     
     extract_dir = await download_and_extract_zip(job_id)
@@ -128,7 +128,7 @@ async def preview_assets(job_id: int, file_path: str):
         job = await db.get(Job, job_id)
         if not job:
             raise HTTPException(status_code=404, detail="Job not found")
-        if job.status != "complete" or not job.output_zip_url:
+        if job.status != JobStatus.complete or not job.output_zip_url:
             raise HTTPException(status_code=400, detail="Job not complete or no output available")
     
     extract_dir = await download_and_extract_zip(job_id)
