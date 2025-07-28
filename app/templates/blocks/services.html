@@ -1,11 +1,105 @@
-<section class="bg-gray-100 py-12 px-4">
-  <h2 class="text-3xl font-semibold text-center mb-6">{{ heading or 'Our Services' }}</h2>
-  <p class="text-center mb-8">{{ short_copy or original_text or text }}</p>
-  {% if img_urls %}
-    <div class="flex flex-wrap justify-center gap-4">
-      {% for img in img_urls %}
-        <img src="{{ img }}" alt="" class="rounded shadow max-h-32"/>
-      {% endfor %}
+<!-- Enhanced Services Section -->
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-16">
+      <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+        {{ heading or 'Our Professional Services' }}
+      </h2>
+      
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        {{ short_copy or original_text or 'We provide comprehensive solutions with expert craftsmanship and reliable service you can count on.' }}
+      </p>
+      
+      <!-- Decorative line -->
+      <div class="flex justify-center mt-8">
+        <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+      </div>
     </div>
-  {% endif %}
+    
+    <!-- Services Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+      {% if img_urls and img_urls|length > 1 %}
+        {% for img in img_urls[:6] %}
+          <div class="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+            <div class="relative overflow-hidden rounded-t-xl">
+              <img src="{{ img }}" alt="Service {{ loop.index }}" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            
+            <div class="p-6">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200">
+                Professional Service {{ loop.index }}
+              </h3>
+              <p class="text-gray-600 mb-4 leading-relaxed">
+                Expert solutions tailored to your specific needs with guaranteed satisfaction.
+              </p>
+              
+              <div class="flex items-center justify-between">
+                <span class="text-blue-600 font-semibold">Learn More</span>
+                <svg class="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <!-- Default service cards when no images -->
+        {% set default_services = [
+          {'icon': 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547A8.014 8.014 0 004 21h4.286a1 1 0 00.98-.804l1.58-7.11a1 1 0 01.98-.804h.673a1 1 0 01.98.804l1.58 7.11A1 1 0 0015.714 21H20a8.014 8.014 0 00-.572-5.572z', 'title': 'Emergency Repairs', 'desc': '24/7 emergency service for urgent repairs and maintenance needs'},
+          {'icon': 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z', 'title': 'Maintenance', 'desc': 'Regular maintenance services to keep your systems running smoothly'},
+          {'icon': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'title': 'Installation', 'desc': 'Professional installation services with warranty and quality guarantee'},
+          {'icon': 'M13 10V3L4 14h7v7l9-11h-7z', 'title': 'Quick Response', 'desc': 'Fast response times and efficient service to minimize downtime'},
+          {'icon': 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1', 'title': 'Affordable Pricing', 'desc': 'Competitive rates with transparent pricing and no hidden fees'},
+          {'icon': 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'title': 'Satisfaction Guaranteed', 'desc': 'Your satisfaction is our priority with quality workmanship guarantee'}
+        ] %}
+        
+        {% for service in default_services %}
+          <div class="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 p-8">
+            <div class="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl mb-6 group-hover:scale-110 transition-transform duration-300">
+              <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="{{ service.icon }}" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            
+            <h3 class="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200">
+              {{ service.title }}
+            </h3>
+            
+            <p class="text-gray-600 leading-relaxed">
+              {{ service.desc }}
+            </p>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    
+    <!-- Call to Action -->
+    <div class="text-center bg-gradient-to-r from-blue-50 to-orange-50 rounded-2xl p-12">
+      <h3 class="text-3xl font-bold text-gray-900 mb-4">
+        Need Our Services? We're Here to Help!
+      </h3>
+      <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+        Get a free consultation and quote for your project. Our expert team is ready to provide the solutions you need.
+      </p>
+      
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#contact" class="inline-flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+          </svg>
+          Get Free Quote
+        </a>
+        
+        <a href="tel:{{ phone_number or '#' }}" class="inline-flex items-center px-8 py-4 bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold rounded-lg transition-all duration-200">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+          Call Now
+        </a>
+      </div>
+    </div>
+  </div>
 </section> 

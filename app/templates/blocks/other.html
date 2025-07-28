@@ -1,7 +1,42 @@
-<section class="bg-gray-200 py-8 px-4">
-  <h2 class="text-2xl font-semibold mb-2">{{ heading or 'Section' }}</h2>
-  <p>{{ short_copy or original_text or text }}</p>
-  {% if img_urls %}
-    <img src="{{ img_urls[0] }}" alt="" class="mx-auto rounded max-h-32"/>
-  {% endif %}
+<!-- Enhanced Other/General Content Section -->
+<section class="py-16 bg-white border-b border-gray-100">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <!-- Content Column -->
+      <div class="{% if img_urls %}order-1{% endif %}">
+        {% if heading %}
+          <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+            {{ heading }}
+          </h2>
+        {% endif %}
+        
+        {% if short_copy or original_text or text %}
+          <div class="prose prose-lg text-gray-600 leading-relaxed">
+            <p>{{ short_copy or original_text or text }}</p>
+          </div>
+        {% endif %}
+        
+        <!-- Call to Action -->
+        <div class="mt-8">
+          <a href="#contact" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+            </svg>
+            Learn More
+          </a>
+        </div>
+      </div>
+      
+      <!-- Image Column -->
+      {% if img_urls %}
+        <div class="order-2">
+          <div class="relative rounded-xl overflow-hidden shadow-xl">
+            <img src="{{ img_urls[0] }}" alt="{{ heading or 'Content Image' }}" class="w-full h-64 lg:h-80 object-cover"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
 </section> 
