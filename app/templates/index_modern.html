@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title or 'Modern Professional Website' }}</title>
+  
+  <!-- Meta tags for SEO and social sharing -->
+  <meta name="description" content="{{ brand_identity.brand.description or 'Professional services and solutions you can trust' }}">
+  <meta name="keywords" content="{{ brand_identity.brand.industry or 'business' }}, professional services, quality solutions">
+  <meta name="author" content="{{ brand_identity.brand.name or 'Professional Services' }}">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ title or 'Modern Professional Website' }}">
+  <meta property="og:description" content="{{ brand_identity.brand.description or 'Professional services and solutions you can trust' }}">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="{{ title or 'Modern Professional Website' }}">
+  <meta property="twitter:description" content="{{ brand_identity.brand.description or 'Professional services and solutions you can trust' }}">
+  
+  <!-- Favicon and app icons -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  
+  <!-- Preconnect to external domains for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Keep Tailwind for utility classes, but our CSS system takes precedence -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
+  
+  <!-- Dynamic Brand CSS System -->
+  <style>
+    {{ brand_css|safe }}
+    
+    /* Additional performance optimizations */
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Smooth scrolling for anchor links */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* Loading state styles */
+    .loading {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease-out;
+    }
+    
+    .loaded {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Enhanced focus styles for accessibility */
+    *:focus-visible {
+      outline: 2px solid var(--brand-accent, #F59E0B);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    
+    /* Reduced motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+    
+    /* Dark mode considerations */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --brand-text-primary: #F9FAFB;
+        --brand-text-secondary: #D1D5DB;
+        --brand-background: #111827;
+        --brand-surface: #1F2937;
+        --brand-border: #374151;
+      }
+    }
+    
+    /* Print styles */
+    @media print {
+      * {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+      }
+      
+      .no-print {
+        display: none !important;
+      }
+      
+      a[href]:after {
+        content: " (" attr(href) ")";
+      }
+    }
+  </style>
+  
+  <!-- Typography CSS if available -->
+  {% if typography.font_imports %}
+    <style>
+      {{ typography.font_imports|safe }}
+    </style>
+  {% endif %}
+  
+  <!-- Performance optimization: preload critical resources -->
+  {% if sections and sections[0].image_set and sections[0].image_set.primary_image %}
+    <link rel="preload" as="image" href="{{ sections[0].image_set.primary_image.url }}">
+  {% endif %}
+</head>
+<body class="antialiased">
+  <!-- Skip to main content for accessibility -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-brand-accent text-white px-4 py-2 rounded-md z-50">
+    Skip to main content
+  </a>
+  
+  <!-- Main content wrapper -->
+  <main id="main-content" class="min-h-screen">
+    {% for section in sections %}
+      <!-- Section {{ section.section_id }}: {{ section.category }} -->
+      <section 
+        id="section-{{ section.section_id }}" 
+        class="loading"
+        data-section-id="{{ section.section_id }}"
+        data-category="{{ section.category }}"
+        data-aos="fade-up"
+        data-aos-duration="600"
+        data-aos-delay="{{ loop.index0 * 100 }}"
+        {% if section.confidence %}data-confidence="{{ section.confidence }}"{% endif %}
+      >
+        {% if section.category in ['hero', 'about', 'services', 'gallery', 'contact'] %}
+          {% with 
+            section_id=section.section_id, 
+            category=section.category, 
+            heading=section.heading, 
+            short_copy=section.short_copy, 
+            original_text=section.original_text, 
+            img_urls=section.img_urls,
+            image_set=section.image_set,
+            phone_number=section.phone_number, 
+            email=section.email, 
+            business_data=section.business_data, 
+            classes=section.classes, 
+            id=section.id, 
+            confidence=section.confidence, 
+            reasoning=section.reasoning, 
+            is_hybrid=section.is_hybrid, 
+            hybrid_categories=section.hybrid_categories,
+            brand_identity=brand_identity,
+            typography=section.typography
+          %}
+            {% if section.category == 'hero' %}
+              {% include 'blocks/hero_modern.html' %}
+            {% elif section.category == 'about' %}
+              {% include 'blocks/about_responsive.html' %}
+            {% elif section.category == 'services' %}
+              {% include 'blocks/services_modern.html' %}
+            {% elif section.category == 'contact' %}
+              {% include 'blocks/contact_modern.html' %}
+            {% elif section.category == 'gallery' %}
+              {% include 'blocks/gallery_responsive.html' %}
+            {% else %}
+              <!-- Improved other template with modern styling -->
+              {% include 'blocks/other.html' %}
+            {% endif %}
+          {% endwith %}
+        {% elif section.category.endswith('_mixed') %}
+          {% with 
+            section_id=section.section_id, 
+            category=section.category, 
+            heading=section.heading, 
+            short_copy=section.short_copy, 
+            original_text=section.original_text, 
+            img_urls=section.img_urls,
+            image_set=section.image_set,
+            phone_number=section.phone_number, 
+            email=section.email, 
+            business_data=section.business_data, 
+            classes=section.classes, 
+            id=section.id, 
+            confidence=section.confidence, 
+            reasoning=section.reasoning, 
+            is_hybrid=section.is_hybrid, 
+            hybrid_categories=section.hybrid_categories,
+            brand_identity=brand_identity,
+            typography=section.typography
+          %}
+            {% include 'blocks/mixed_responsive.html' %}
+          {% endwith %}
+        {% else %}
+          {% with 
+            section_id=section.section_id, 
+            category=section.category, 
+            heading=section.heading, 
+            short_copy=section.short_copy, 
+            original_text=section.original_text, 
+            img_urls=section.img_urls,
+            image_set=section.image_set,
+            phone_number=section.phone_number, 
+            email=section.email, 
+            business_data=section.business_data, 
+            classes=section.classes, 
+            id=section.id,
+            brand_identity=brand_identity,
+            typography=section.typography
+          %}
+            {% include 'blocks/other.html' %}
+          {% endwith %}
+        {% endif %}
+      </section>
+    {% endfor %}
+  </main>
+  
+  <!-- Scroll to top button -->
+  <button 
+    id="scroll-to-top" 
+    class="fixed bottom-8 right-8 w-12 h-12 bg-brand-accent text-white rounded-full shadow-lg opacity-0 transition-all duration-300 transform translate-y-4 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-brand-focus no-print z-40"
+    aria-label="Scroll to top"
+    style="background: var(--brand-accent, #F59E0B);"
+  >
+    <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+    </svg>
+  </button>
+  
+  <!-- Enhanced JavaScript for interactions and performance -->
+  <script>
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize loading animations
+      const sections = document.querySelectorAll('.loading');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.remove('loading');
+            entry.target.classList.add('loaded');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { 
+        threshold: 0.1, 
+        rootMargin: '50px 0px -50px 0px' 
+      });
+      
+      sections.forEach(section => observer.observe(section));
+      
+      // Scroll to top functionality
+      const scrollButton = document.getElementById('scroll-to-top');
+      let scrollTimeout;
+      
+      window.addEventListener('scroll', function() {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          if (window.pageYOffset > 300) {
+            scrollButton.style.opacity = '1';
+            scrollButton.style.transform = 'translateY(0)';
+          } else {
+            scrollButton.style.opacity = '0';
+            scrollButton.style.transform = 'translateY(16px)';
+          }
+        }, 10);
+      });
+      
+      scrollButton.addEventListener('click', function() {
+        window.scrollTo({ 
+          top: 0, 
+          behavior: 'smooth' 
+        });
+      });
+      
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+      
+      // Enhanced form validation and UX
+      const forms = document.querySelectorAll('form');
+      forms.forEach(form => {
+        const inputs = form.querySelectorAll('input, textarea, select');
+        
+        inputs.forEach(input => {
+          // Real-time validation feedback
+          input.addEventListener('blur', function() {
+            if (this.checkValidity()) {
+              this.classList.remove('invalid');
+              this.classList.add('valid');
+            } else {
+              this.classList.remove('valid');
+              this.classList.add('invalid');
+            }
+          });
+          
+          // Clear validation state on input
+          input.addEventListener('input', function() {
+            this.classList.remove('valid', 'invalid');
+          });
+        });
+        
+        // Form submission with loading state
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const submitButton = this.querySelector('button[type="submit"]');
+          const originalText = submitButton.textContent;
+          
+          submitButton.disabled = true;
+          submitButton.textContent = 'Sending...';
+          submitButton.classList.add('loading');
+          
+          // Simulate form submission (replace with actual logic)
+          setTimeout(() => {
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+            submitButton.classList.remove('loading');
+            
+            // Show success message
+            alert('Thank you for your message! We\'ll get back to you soon.');
+          }, 2000);
+        });
+      });
+      
+      // Add CSS classes for enhanced form states
+      const style = document.createElement('style');
+      style.textContent = `
+        .form-input.valid {
+          border-color: var(--brand-success, #10B981);
+          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .form-input.invalid {
+          border-color: var(--brand-error, #EF4444);
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+        
+        .btn.loading {
+          opacity: 0.7;
+          cursor: not-allowed;
+          transform: scale(0.98);
+        }
+        
+        /* Enhanced mobile touch targets */
+        @media (max-width: 768px) {
+          .btn, .form-input, button, a {
+            min-height: 44px;
+            min-width: 44px;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // Performance: Lazy load images that aren't critical
+      if ('IntersectionObserver' in window) {
+        const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+        const imageObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              if (img.dataset.src) {
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+              }
+              img.classList.add('loaded');
+              imageObserver.unobserve(img);
+            }
+          });
+        });
+        
+        lazyImages.forEach(img => imageObserver.observe(img));
+      }
+      
+      // Add loaded class to body for CSS transitions
+      document.body.classList.add('loaded');
+    });
+    
+    // Global error handling
+    window.addEventListener('error', function(e) {
+      console.warn('Page error:', e.error);
+      // Could send to analytics in production
+    });
+    
+    // Performance monitoring
+    window.addEventListener('load', function() {
+      if ('performance' in window) {
+        const perfData = performance.timing;
+        const loadTime = perfData.loadEventEnd - perfData.navigationStart;
+        console.log('Page load time:', loadTime + 'ms');
+      }
+    });
+  </script>
+  
+  <!-- Analytics placeholder -->
+  {% if brand_identity.analytics and brand_identity.analytics.google_analytics %}
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ brand_identity.analytics.google_analytics }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ brand_identity.analytics.google_analytics }}');
+    </script>
+  {% endif %}
+  
+  <!-- Schema.org structured data for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "{{ brand_identity.brand.name or title }}",
+    "description": "{{ brand_identity.brand.description or 'Professional services and solutions' }}",
+    {% if business_data.phones and business_data.phones[0] %}"telephone": "{{ business_data.phones[0] }}",{% endif %}
+    {% if business_data.emails and business_data.emails[0] %}"email": "{{ business_data.emails[0] }}",{% endif %}
+    "url": "{{ request.url if request else '' }}",
+    "priceRange": "$$",
+    "openingHours": "Mo-Fr 07:00-18:00, Sa 08:00-16:00"
+  }
+  </script>
+</body>
+</html>

@@ -8,25 +8,73 @@ import boto3
 from app.models import Job
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
+from .typography import create_typography_system
+from .image_processing import process_section_images
+from .css_generator import generate_brand_css
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), '../templates')
 
 CATEGORY_BLOCKS = {
-    'hero': 'blocks/hero.html',
-    'about': 'blocks/about.html',
-    'services': 'blocks/services.html',
-    'gallery': 'blocks/gallery.html',
-    'contact': 'blocks/contact.html',
+    'hero': 'blocks/hero_modern.html',
+    'about': 'blocks/about_responsive.html', 
+    'services': 'blocks/services_modern.html',
+    'gallery': 'blocks/gallery_responsive.html',
+    'contact': 'blocks/contact_modern.html',
     'other': 'blocks/other.html',
+    # Handle mixed/hybrid categories from Phase 2
+    'hero_mixed': 'blocks/mixed_responsive.html',
+    'about_mixed': 'blocks/mixed_responsive.html',
+    'services_mixed': 'blocks/mixed_responsive.html',
+    'contact_mixed': 'blocks/mixed_responsive.html',
 }
+
+def prepare_section_for_rendering(section: Dict[str, Any]) -> Dict[str, Any]:
+    """Prepare section data for template rendering with enhanced context"""
+    
+    # Extract business data for template context
+    business_data = section.get('business_data', {})
+    phones = business_data.get('phones', [])
+    emails = business_data.get('emails', [])
+    
+    # Create enhanced template context
+    template_context = {
+        'section_id': section.get('section_id', 0),
+        'category': section.get('category', 'other'),
+        'heading': section.get('heading', ''),
+        'short_copy': section.get('short_copy', ''),
+        'original_text': section.get('original_text', ''),
+        'img_urls': section.get('img_urls', []),
+        'classes': section.get('classes', []),
+        'id': section.get('id', ''),
+        
+        # Business data for templates
+        'phone_number': phones[0] if phones else '#',
+        'email': emails[0] if emails else '#',
+        'business_data': business_data,
+        
+        # Enhanced analysis data
+        'confidence': section.get('confidence', 0.5),
+        'reasoning': section.get('reasoning', ''),
+        'is_hybrid': section.get('is_hybrid', False),
+        'hybrid_categories': section.get('hybrid_categories', []),
+    }
+    
+    return template_context
 
 def render_site(sections: List[Dict[str, Any]], title: str = None) -> str:
     env = Environment(
         loader=FileSystemLoader(TEMPLATES_DIR),
         autoescape=select_autoescape(['html', 'xml'])
     )
+    
+    # Prepare sections for rendering with enhanced context
+    enhanced_sections = []
+    for section in sections:
+        enhanced_section = prepare_section_for_rendering(section)
+        enhanced_sections.append(enhanced_section)
+    
     template = env.get_template('index.html')
-    html = template.render(sections=sections, title=title)
+    html = template.render(sections=enhanced_sections, title=title)
     # Create temp dir for site bundle
     temp_dir = tempfile.mkdtemp()
     # Write index.html
@@ -56,6 +104,123 @@ def render_site(sections: List[Dict[str, Any]], title: str = None) -> str:
                 rel_path = os.path.relpath(abs_path, temp_dir)
                 zipf.write(abs_path, rel_path)
     return zip_path
+
+
+def render_site_with_brand(sections: List[Dict[str, Any]], brand_identity: Dict[str, Any], title: str = None) -> str:
+    """Enhanced render function with brand identity, typography, and image processing"""
+    
+    env = Environment(
+        loader=FileSystemLoader(TEMPLATES_DIR),
+        autoescape=select_autoescape(['html', 'xml'])
+    )
+    
+    # Create typography system from brand identity
+    typography = create_typography_system(brand_identity)
+    
+    # Generate dynamic CSS based on brand identity
+    brand_css = generate_brand_css(brand_identity, typography)
+    
+    # Process sections with enhanced context including images and typography
+    enhanced_sections = []
+    for section in sections:
+        # Process images for this section
+        image_set = process_section_images(section, brand_identity)
+        
+        # Prepare section with all enhancements
+        enhanced_section = prepare_section_for_rendering(section)
+        
+        # Add processed images
+        enhanced_section['image_set'] = {
+            'primary_image': image_set.primary_image,
+            'all_images': image_set.images,
+            'hero_images': image_set.hero_images,
+            'gallery_images': image_set.gallery_images,
+            'icon_images': image_set.icon_images,
+        }
+        
+        # Add typography context
+        enhanced_section['typography'] = {
+            'primary_font': typography.primary_font,
+            'heading_font': typography.heading_font,
+            'semantic_styles': typography.get_semantic_text_styles(),
+        }
+        
+        enhanced_sections.append(enhanced_section)
+    
+    # Aggregate business data from all sections for global template context
+    all_phones = []
+    all_emails = []
+    for section in sections:
+        business_data = section.get('business_data', {})
+        phones = business_data.get('phones', [])
+        emails = business_data.get('emails', [])
+        all_phones.extend(phones)
+        all_emails.extend(emails)
+    
+    # Remove duplicates while preserving order
+    all_phones = list(dict.fromkeys(all_phones))
+    all_emails = list(dict.fromkeys(all_emails))
+    
+    aggregated_business_data = {
+        'phones': all_phones,
+        'emails': all_emails
+    }
+    
+    # Create template context with brand identity and CSS
+    template_context = {
+        'sections': enhanced_sections,
+        'title': title or 'Modern Professional Website',
+        'brand_identity': brand_identity,
+        'business_data': aggregated_business_data,  # Add aggregated business data
+        'typography': {
+            'css': typography.get_typography_css(),
+            'responsive_css': typography.apply_responsive_scaling(),
+            'font_imports': typography.get_font_imports(),
+            'primary_font': typography.primary_font,
+            'heading_font': typography.heading_font,
+        },
+        'brand_css': brand_css,  # Dynamic CSS system
+    }
+    
+    # Render with modern enhanced template
+    template = env.get_template('index_modern.html')
+    html = template.render(**template_context)
+    
+    # Create temp dir for site bundle
+    temp_dir = tempfile.mkdtemp()
+    
+    # Write index.html
+    index_path = os.path.join(temp_dir, 'index.html')
+    with open(index_path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    
+    # Copy referenced assets (keeping existing logic)
+    asset_paths = set()
+    for section in sections:
+        for img in section.get('img_urls', []):
+            if img and not img.startswith('http'):
+                asset_paths.add(img)
+    
+    for asset in asset_paths:
+        asset_src = os.path.join(TEMPLATES_DIR, asset.lstrip('/'))
+        asset_dst = os.path.join(temp_dir, asset.lstrip('/'))
+        os.makedirs(os.path.dirname(asset_dst), exist_ok=True)
+        if os.path.exists(asset_src):
+            shutil.copy(asset_src, asset_dst)
+    
+    # Zip the site
+    zip_path = os.path.join(temp_dir, 'site.zip')
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, _, files in os.walk(temp_dir):
+            for file in files:
+                if file == 'site.zip':
+                    continue
+                abs_path = os.path.join(root, file)
+                rel_path = os.path.relpath(abs_path, temp_dir)
+                zipf.write(abs_path, rel_path)
+    
+    return zip_path
+
 
 async def upload_and_set_output(job_id: int, zip_path: str, db: AsyncSession):
     minio_endpoint = os.getenv("MINIO_ENDPOINT", "localhost:9000")

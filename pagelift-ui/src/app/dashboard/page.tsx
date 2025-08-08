@@ -4,6 +4,48 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProjects, Project } from "@/lib/api";
 import CreateProjectForm from "@/components/CreateProjectForm";
 
+function StatusBadge({ status }: { status: string }) {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'complete':
+        return 'bg-green-100 text-green-800';
+      case 'queued':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'processing':
+        return 'bg-blue-100 text-blue-800';
+      case 'failed':
+        return 'bg-red-100 text-red-800';
+      case 'no_job':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'complete':
+        return 'Complete';
+      case 'queued':
+        return 'Queued';
+      case 'processing':
+        return 'Processing';
+      case 'failed':
+        return 'Failed';
+      case 'no_job':
+        return 'No Job';
+      default:
+        return 'Unknown';
+    }
+  };
+
+  return (
+    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(status)}`}>
+      {getStatusText(status)}
+    </span>
+  );
+}
+
 export default function DashboardPage() {
   const queryClient = useQueryClient();
   const { data: projects, isLoading, error } = useQuery<Project[]>({
@@ -12,36 +54,100 @@ export default function DashboardPage() {
   });
 
   return (
-    <div className="max-w-2xl mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">Projects Dashboard</h1>
+    <div className="max-w-6xl mx-auto py-10 px-4">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Projects Dashboard</h1>
+      </div>
       <CreateProjectForm onSuccess={() => queryClient.invalidateQueries({ queryKey: ["projects"] })} />
       <div className="bg-white shadow rounded-lg p-6">
         {isLoading && <div className="text-gray-500">Loading projects...</div>}
-        {error && <div className="text-red-600">Error loading projects.</div>}
-        {projects && (
-          <table className="w-full text-left">
-            <thead>
-              <tr>
-                <th className="py-2">Project Name</th>
-                <th className="py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {projects.map((project) => (
-                <tr key={project.id} className="border-t">
-                  <td className="py-2">{project.name}</td>
-                  <td className="py-2">
-                    <Link
-                      href={`/projects/${project.id}`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      View
-                    </Link>
-                  </td>
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <span className="font-medium text-red-800">Error loading projects</span>
+            </div>
+            <p className="text-red-600 text-sm mt-1">
+              Unable to connect to the API. Please check if the backend is running and try refreshing the page.
+            </p>
+          </div>
+        )}
+        {projects && projects.length === 0 && (
+          <div className="text-gray-500 text-center py-8">
+            No projects yet. Create your first project above!
+          </div>
+        )}
+        {projects && projects.length > 0 && (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-3 font-semibold">Project Name</th>
+                  <th className="py-3 font-semibold">URL</th>
+                  <th className="py-3 font-semibold">Status</th>
+                  <th className="py-3 font-semibold">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {projects.map((project) => (
+                  <tr key={project.id} className="border-t hover:bg-gray-50">
+                    <td className="py-3 font-medium">{project.name}</td>
+                    <td className="py-3 text-gray-600 max-w-xs truncate">
+                      <a 
+                        href={project.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="hover:text-blue-600"
+                      >
+                        {project.url}
+                      </a>
+                    </td>
+                    <td className="py-3">
+                      <div className="flex flex-col gap-1">
+                        <StatusBadge status={project.status || 'unknown'} />
+                        {project.error && (
+                          <div className="text-xs text-red-600 max-w-xs truncate" title={project.error}>
+                            Error: {project.error}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-3">
+                      <div className="flex gap-2">
+                        <Link
+                          href={`/projects/${project.id}`}
+                          className="text-blue-600 hover:underline text-sm"
+                        >
+                          View
+                        </Link>
+                        {project.status === 'complete' && project.download_url && (
+                          <a
+                            href={`${process.env.NEXT_PUBLIC_API_URL}/jobs/${project.job_id}/preview`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-green-600 hover:underline text-sm"
+                          >
+                            Preview
+                          </a>
+                        )}
+                        {project.status === 'complete' && project.download_url && (
+                          <a
+                            href={`${process.env.NEXT_PUBLIC_API_URL}/jobs/${project.job_id}/download`}
+                            download
+                            className="text-purple-600 hover:underline text-sm"
+                          >
+                            Download
+                          </a>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

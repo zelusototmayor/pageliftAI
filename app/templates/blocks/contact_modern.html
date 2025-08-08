@@ -1,0 +1,662 @@
+<!-- Modern Brand-Aware Contact Section -->
+{% set content_length = (original_text or short_copy or '')|length %}
+{% set has_images = image_set.all_images and image_set.all_images|length > 0 %}
+{% set has_phone = phone_number and phone_number != '#' %}
+{% set has_email = email and email != '#' %}
+{% set is_minimal = content_length < 100 %}
+{% set is_rich = content_length > 300 %}
+
+<!-- Extract brand colors with fallbacks -->
+{% set primary_color = brand_identity.colors.primary or '#3B82F6' %}
+{% set secondary_color = brand_identity.colors.secondary or '#64748B' %}
+{% set accent_color = brand_identity.colors.accent or '#F59E0B' %}
+{% set text_primary = brand_identity.colors.text_primary or '#111827' %}
+{% set background_color = brand_identity.colors.background or '#FFFFFF' %}
+
+<!-- Typography settings -->
+{% set heading_font = typography.heading_font or 'Inter, system-ui, sans-serif' %}
+{% set primary_font = typography.primary_font or 'Inter, system-ui, sans-serif' %}
+
+<!-- Industry and tone settings -->
+{% set industry = brand_identity.brand.industry or 'business' %}
+{% set tone = brand_identity.brand.tone or 'professional' %}
+
+<style>
+  /* Dynamic CSS based on brand identity */
+  .contact-section {
+    --brand-primary: {{ primary_color }};
+    --brand-secondary: {{ secondary_color }};
+    --brand-accent: {{ accent_color }};
+    --brand-text: {{ text_primary }};
+    --brand-background: {{ background_color }};
+    --contact-gradient: linear-gradient(135deg, 
+      color-mix(in srgb, var(--brand-primary) 90%, #000000 10%), 
+      color-mix(in srgb, var(--brand-primary) 70%, var(--brand-secondary) 30%)
+    );
+  }
+  
+  .contact-header {
+    background: linear-gradient(135deg, 
+      color-mix(in srgb, #ffffff 95%, var(--brand-primary) 5%) 0%,
+      color-mix(in srgb, #ffffff 85%, var(--brand-accent) 15%) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: {{ heading_font }};
+  }
+  
+  .contact-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .contact-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 25px 50px color-mix(in srgb, var(--brand-primary) 20%, transparent 80%);
+  }
+  
+  .contact-method-icon {
+    background: linear-gradient(135deg, var(--brand-primary), color-mix(in srgb, var(--brand-primary) 80%, var(--brand-accent) 20%));
+  }
+  
+  .form-input {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-family: {{ primary_font }};
+  }
+  
+  .form-input:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--brand-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-accent) 20%, transparent 80%);
+  }
+  
+  .cta-primary {
+    background: linear-gradient(135deg, var(--brand-accent), color-mix(in srgb, var(--brand-accent) 85%, #ffffff 15%));
+    box-shadow: 0 10px 25px color-mix(in srgb, var(--brand-accent) 30%, transparent 70%);
+  }
+  
+  .cta-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid color-mix(in srgb, #ffffff 40%, transparent 60%);
+    backdrop-filter: blur(10px);
+  }
+  
+  .trust-badge {
+    background: color-mix(in srgb, var(--brand-accent) 15%, transparent 85%);
+    border: 1px solid color-mix(in srgb, var(--brand-accent) 30%, transparent 70%);
+  }
+  
+  /* Industry-specific styling adjustments */
+  {% if industry == 'plumbing' %}
+    .industry-emergency { --emergency: #DC2626; --emergency-light: #FCA5A5; }
+  {% elif industry == 'restaurant' %}
+    .industry-emergency { --emergency: #DC2626; --emergency-light: #FCA5A5; }
+  {% elif industry == 'tech' %}
+    .industry-emergency { --emergency: #7C3AED; --emergency-light: #C4B5FD; }
+  {% elif industry == 'medical' %}
+    .industry-emergency { --emergency: #DC2626; --emergency-light: #FCA5A5; }
+  {% else %}
+    .industry-emergency { --emergency: #DC2626; --emergency-light: #FCA5A5; }
+  {% endif %}
+</style>
+
+<section id="contact" class="contact-section relative {% if is_minimal %}py-16{% elif is_rich %}py-32{% else %}py-24{% endif %} overflow-hidden">
+  <!-- Dynamic background -->
+  <div class="absolute inset-0" style="background: var(--contact-gradient)"></div>
+  
+  <!-- Advanced pattern overlay -->
+  <div class="absolute inset-0 opacity-10">
+    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <defs>
+        <pattern id="contact-pattern" x="0" y="0" width="25" height="25" patternUnits="userSpaceOnUse">
+          <circle cx="12.5" cy="12.5" r="1.5" fill="white" opacity="0.6"/>
+          <circle cx="6.25" cy="6.25" r="0.8" fill="white" opacity="0.4"/>
+          <circle cx="18.75" cy="18.75" r="0.8" fill="white" opacity="0.4"/>
+          <circle cx="6.25" cy="18.75" r="0.5" fill="white" opacity="0.3"/>
+          <circle cx="18.75" cy="6.25" r="0.5" fill="white" opacity="0.3"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#contact-pattern)"/>
+    </svg>
+  </div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    {% if is_minimal %}
+      <!-- MINIMAL: Simple centered contact with modern styling -->
+      <div class="text-center max-w-2xl mx-auto">
+        <!-- Floating badge -->
+        <div class="inline-flex items-center px-6 py-3 rounded-full contact-card mb-8">
+          <div class="w-3 h-3 rounded-full mr-3 animate-pulse" style="background: {{ accent_color }}"></div>
+          <span class="text-white font-semibold">
+            {% if industry == 'plumbing' %}Emergency Plumbing Available
+            {% elif industry == 'restaurant' %}Reservations & Catering
+            {% elif industry == 'tech' %}24/7 Technical Support
+            {% elif industry == 'medical' %}Patient Care Available
+            {% else %}Professional Service Available
+            {% endif %}
+          </span>
+        </div>
+        
+        <h2 class="contact-header text-3xl lg:text-4xl font-bold mb-6">
+          {{ heading or 'Get In Touch' }}
+        </h2>
+        
+        <p class="text-xl text-white/90 mb-8 leading-relaxed" style="font-family: {{ primary_font }}">
+          {{ short_copy or original_text or 'Ready to get started? Contact us today!' }}
+        </p>
+        
+        <!-- Modern contact methods with enhanced styling -->
+        <div class="space-y-4">
+          {% if has_phone %}
+            <a href="tel:{{ phone_number }}" class="contact-card flex items-center justify-center p-6 rounded-2xl transition-all duration-500 transform hover:scale-105 hover:shadow-2xl group touch-target">
+              <div class="contact-method-icon flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                </svg>
+              </div>
+              <div class="text-left">
+                <div class="text-white/80 text-sm font-medium">Call Now</div>
+                <div class="text-xl font-semibold text-white group-hover:text-white/90 transition-colors duration-300">{{ phone_number }}</div>
+              </div>
+            </a>
+          {% endif %}
+          
+          {% if has_email %}
+            <a href="mailto:{{ email }}" class="contact-card flex items-center justify-center p-6 rounded-2xl transition-all duration-500 transform hover:scale-105 hover:shadow-2xl group">
+              <div class="contact-method-icon flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                   style="background: linear-gradient(135deg, {{ accent_color }}, color-mix(in srgb, {{ accent_color }} 80%, {{ primary_color }} 20%))">
+                <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                </svg>
+              </div>
+              <div class="text-left">
+                <div class="text-white/80 text-sm font-medium">Email Us</div>
+                <div class="text-xl font-semibold text-white group-hover:text-white/90 transition-colors duration-300">{{ email }}</div>
+              </div>
+            </a>
+          {% endif %}
+          
+          <!-- Default contact if no specific info -->
+          {% if not has_phone and not has_email %}
+            <a href="#" class="contact-card flex items-center justify-center p-6 rounded-2xl transition-all duration-500 transform hover:scale-105 hover:shadow-2xl group">
+              <div class="contact-method-icon flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                </svg>
+              </div>
+              <span class="text-xl font-semibold text-white">Contact Us Today</span>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      
+    {% elif is_rich %}
+      <!-- RICH CONTENT: Comprehensive modern contact experience -->
+      <div class="space-y-16">
+        <!-- Enhanced Header -->
+        <div class="text-center">
+          <!-- Premium badge -->
+          <div class="inline-flex items-center px-8 py-4 rounded-full contact-card mb-8">
+            <div class="w-4 h-4 rounded-full mr-4 animate-pulse" style="background: {{ accent_color }}"></div>
+            <span class="text-white font-semibold text-lg">
+              {% if industry == 'plumbing' %}24/7 Emergency Plumbing Service
+              {% elif industry == 'restaurant' %}Reservations & Private Events
+              {% elif industry == 'tech' %}Expert Technical Consultation
+              {% elif industry == 'medical' %}Professional Healthcare Services
+              {% else %}Premium Professional Services
+              {% endif %}
+            </span>
+            <div class="w-4 h-4 rounded-full ml-4 animate-pulse" style="background: {{ primary_color }}"></div>
+          </div>
+          
+          <h2 class="contact-header text-4xl lg:text-6xl font-bold mb-6">
+            {{ heading or 'Get In Touch Today' }}
+          </h2>
+          
+          <p class="text-xl lg:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8" style="font-family: {{ primary_font }}">
+            {{ short_copy or original_text or 'Ready to transform your space? Our expert team is standing by to provide you with a free consultation and detailed quote. Contact us today to get started!' }}
+          </p>
+          
+          <!-- Trust indicators ribbon -->
+          <div class="flex flex-wrap justify-center gap-4 mb-8">
+            <div class="trust-badge inline-flex items-center px-4 py-2 rounded-full backdrop-filter backdrop-blur-md">
+              <svg class="w-4 h-4 mr-2 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span class="text-white/90 font-medium text-sm">Licensed & Insured</span>
+            </div>
+            <div class="trust-badge inline-flex items-center px-4 py-2 rounded-full backdrop-filter backdrop-blur-md">
+              <svg class="w-4 h-4 mr-2 text-blue-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+              </svg>
+              <span class="text-white/90 font-medium text-sm">Fast Response</span>
+            </div>
+            <div class="trust-badge inline-flex items-center px-4 py-2 rounded-full backdrop-filter backdrop-blur-md">
+              <svg class="w-4 h-4 mr-2 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span class="text-white/90 font-medium text-sm">Satisfaction Guaranteed</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Rich contact grid with advanced features -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <!-- Enhanced Contact Methods -->
+          <div class="space-y-8">
+            <h3 class="text-2xl font-bold text-white mb-6" style="font-family: {{ heading_font }}">Multiple Ways to Reach Us</h3>
+            
+            {% if has_phone %}
+              <div class="contact-card rounded-3xl p-8 transition-all duration-500 hover:shadow-2xl group">
+                <div class="flex items-start">
+                  <div class="contact-method-icon flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                    </svg>
+                  </div>
+                  <div class="ml-6">
+                    <h4 class="text-xl font-semibold mb-2 text-white" style="font-family: {{ heading_font }}">Call Us Directly</h4>
+                    <p class="text-white/80 mb-4 leading-relaxed" style="font-family: {{ primary_font }}">
+                      {% if industry == 'plumbing' %}Immediate response for plumbing emergencies and urgent repairs.
+                      {% elif industry == 'restaurant' %}Reservations, catering inquiries, and special event planning.
+                      {% elif industry == 'tech' %}Technical support and consultation for all your technology needs.
+                      {% else %}Speak with our experts immediately for urgent needs or quick questions.
+                      {% endif %}
+                    </p>
+                    <a href="tel:{{ phone_number }}" class="inline-flex items-center text-white hover:text-white/90 font-semibold text-lg transition-all duration-300 group-hover:translate-x-1">
+                      {{ phone_number }}
+                      <svg class="w-5 h-5 ml-2 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                      </svg>
+                    </a>
+                    <div class="mt-4">
+                      <span class="inline-block px-4 py-2 rounded-full text-sm font-medium shadow-lg"
+                            style="background: linear-gradient(135deg, {{ accent_color }}, color-mix(in srgb, {{ accent_color }} 80%, #ffffff 20%)); color: white;">
+                        {% if industry == 'plumbing' %}24/7 Emergency Available
+                        {% elif industry == 'restaurant' %}Open Daily
+                        {% elif industry == 'tech' %}24/7 Support Available
+                        {% else %}Available 24/7
+                        {% endif %}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+            
+            {% if has_email %}
+              <div class="contact-card rounded-3xl p-8 transition-all duration-500 hover:shadow-2xl group">
+                <div class="flex items-start">
+                  <div class="contact-method-icon flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                       style="background: linear-gradient(135deg, {{ accent_color }}, color-mix(in srgb, {{ accent_color }} 80%, {{ primary_color }} 20%))">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                    </svg>
+                  </div>
+                  <div class="ml-6">
+                    <h4 class="text-xl font-semibold mb-2 text-white" style="font-family: {{ heading_font }}">Email Us</h4>
+                    <p class="text-white/80 mb-4 leading-relaxed" style="font-family: {{ primary_font }}">
+                      Send us detailed information about your project for a comprehensive response and detailed quote.
+                    </p>
+                    <a href="mailto:{{ email }}" class="inline-flex items-center text-white hover:text-white/90 font-semibold text-lg transition-all duration-300 group-hover:translate-x-1">
+                      {{ email }}
+                      <svg class="w-5 h-5 ml-2 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                      </svg>
+                    </a>
+                    <div class="mt-4">
+                      <span class="inline-block px-4 py-2 rounded-full text-sm font-medium shadow-lg"
+                            style="background: linear-gradient(135deg, {{ primary_color }}, color-mix(in srgb, {{ primary_color }} 80%, {{ accent_color }} 20%)); color: white;">
+                        Response within 1 hour
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+            
+            <!-- Emergency/Priority contact for rich content -->
+            {% if industry in ['plumbing', 'medical'] %}
+              <div class="industry-emergency relative rounded-3xl p-8 overflow-hidden" style="background: linear-gradient(135deg, var(--emergency), color-mix(in srgb, var(--emergency) 80%, #000000 20%)); border: 1px solid color-mix(in srgb, var(--emergency) 50%, transparent 50%)">
+                <div class="absolute inset-0 opacity-10">
+                  <svg class="w-full h-full" viewBox="0 0 100 100">
+                    <pattern id="emergency-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                      <circle cx="10" cy="10" r="1" fill="white" opacity="0.6"/>
+                    </pattern>
+                    <rect width="100%" height="100%" fill="url(#emergency-pattern)"/>
+                  </svg>
+                </div>
+                <div class="relative flex items-start">
+                  <div class="flex-shrink-0 w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div class="ml-6">
+                    <h4 class="text-xl font-semibold mb-2 text-red-100" style="font-family: {{ heading_font }}">
+                      {% if industry == 'plumbing' %}Emergency Plumbing
+                      {% else %}Emergency Service
+                      {% endif %}
+                    </h4>
+                    <p class="text-red-100 mb-4 leading-relaxed" style="font-family: {{ primary_font }}">
+                      {% if industry == 'plumbing' %}Burst pipes, water heater failures, and other plumbing emergencies requiring immediate attention.
+                      {% else %}For urgent situations requiring immediate professional attention and rapid response.
+                      {% endif %}
+                    </p>
+                    {% if has_phone %}
+                      <a href="tel:{{ phone_number }}" class="inline-flex items-center text-red-100 hover:text-white font-semibold text-lg transition-colors duration-300">
+                        Emergency: {{ phone_number }}
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L5.036 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+            
+            <!-- Business Information Card -->
+            <div class="contact-card rounded-3xl p-8 transition-all duration-500">
+              <h4 class="text-xl font-semibold mb-4 text-white" style="font-family: {{ heading_font }}">Business Hours & Service Area</h4>
+              <div class="space-y-4 text-white/90">
+                {% if industry == 'restaurant' %}
+                  <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3" style="color: {{ accent_color }}" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Lunch: 11:30 AM - 2:30 PM</span>
+                  </div>
+                  <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3" style="color: {{ accent_color }}" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Dinner: 5:00 PM - 10:00 PM</span>
+                  </div>
+                {% else %}
+                  <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3" style="color: {{ accent_color }}" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Monday - Friday: 7:00 AM - 6:00 PM</span>
+                  </div>
+                  <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3" style="color: {{ accent_color }}" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Saturday: 8:00 AM - 4:00 PM</span>
+                  </div>
+                {% endif %}
+                <div class="flex items-center">
+                  <svg class="w-5 h-5 mr-3" style="color: {{ primary_color }}" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Serving the entire metropolitan area</span>
+                </div>
+                {% if industry in ['plumbing', 'medical'] %}
+                  <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-red-400 font-medium">24/7 Emergency Service Available</span>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Enhanced Contact Form -->
+          <div class="contact-card rounded-3xl p-8 transition-all duration-500 hover:shadow-2xl">
+            <h3 class="text-2xl font-bold mb-6 text-white" style="font-family: {{ heading_font }}">Send Us a Message</h3>
+            
+            <form class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label for="name" class="block text-sm font-medium text-white/80 mb-2">Full Name *</label>
+                  <input type="text" id="name" name="name" required 
+                         class="form-input w-full px-4 py-3 rounded-2xl text-white placeholder-white/50 focus:outline-none transition-all duration-300" 
+                         placeholder="Your name">
+                </div>
+                <div>
+                  <label for="phone" class="block text-sm font-medium text-white/80 mb-2">Phone Number</label>
+                  <input type="tel" id="phone" name="phone" 
+                         class="form-input w-full px-4 py-3 rounded-2xl text-white placeholder-white/50 focus:outline-none transition-all duration-300" 
+                         placeholder="Your phone number">
+                </div>
+              </div>
+              
+              <div>
+                <label for="email" class="block text-sm font-medium text-white/80 mb-2">Email Address *</label>
+                <input type="email" id="email" name="email" required 
+                       class="form-input w-full px-4 py-3 rounded-2xl text-white placeholder-white/50 focus:outline-none transition-all duration-300" 
+                       placeholder="your@email.com">
+              </div>
+              
+              <div>
+                <label for="service" class="block text-sm font-medium text-white/80 mb-2">Service Needed</label>
+                <select id="service" name="service" 
+                        class="form-input w-full px-4 py-3 rounded-2xl text-white focus:outline-none transition-all duration-300">
+                  <option value="">Select a service</option>
+                  {% if industry == 'plumbing' %}
+                    <option value="emergency">Emergency Plumbing</option>
+                    <option value="repair">Pipe Repair</option>
+                    <option value="installation">Installation</option>
+                    <option value="maintenance">Maintenance</option>
+                  {% elif industry == 'restaurant' %}
+                    <option value="reservation">Table Reservation</option>
+                    <option value="catering">Catering Service</option>
+                    <option value="private">Private Event</option>
+                    <option value="other">Other Inquiry</option>
+                  {% elif industry == 'tech' %}
+                    <option value="consultation">Technical Consultation</option>
+                    <option value="support">Technical Support</option>
+                    <option value="development">Development Services</option>
+                    <option value="maintenance">System Maintenance</option>
+                  {% else %}
+                    <option value="consultation">Free Consultation</option>
+                    <option value="emergency">Emergency Service</option>
+                    <option value="maintenance">Regular Maintenance</option>
+                    <option value="installation">Installation</option>
+                    <option value="repair">Repair Service</option>
+                    <option value="other">Other</option>
+                  {% endif %}
+                </select>
+              </div>
+              
+              <div>
+                <label for="message" class="block text-sm font-medium text-white/80 mb-2">Project Details *</label>
+                <textarea id="message" name="message" rows="4" required 
+                          class="form-input w-full px-4 py-3 rounded-2xl text-white placeholder-white/50 focus:outline-none transition-all duration-300 resize-none" 
+                          placeholder="Tell us about your project or what you need help with..."></textarea>
+              </div>
+              
+              <button type="submit" class="cta-primary w-full text-white font-semibold py-4 px-8 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white/20">
+                <span class="flex items-center justify-center">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                  </svg>
+                  Send Message & Get Free Quote
+                </span>
+              </button>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Enhanced Trust Indicators -->
+        <div class="contact-card text-center rounded-3xl p-12 transition-all duration-500">
+          <h3 class="text-2xl font-bold mb-8 text-white" style="font-family: {{ heading_font }}">Why Choose Us?</h3>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="text-center group">
+              <div class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300"
+                   style="background: linear-gradient(135deg, {{ accent_color }}, color-mix(in srgb, {{ accent_color }} 80%, #ffffff 20%))">
+                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <h4 class="font-semibold mb-2 text-white">Free Consultation</h4>
+              <p class="text-white/70 text-sm">No obligation assessment and detailed quote</p>
+            </div>
+            <div class="text-center group">
+              <div class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300"
+                   style="background: linear-gradient(135deg, {{ primary_color }}, color-mix(in srgb, {{ primary_color }} 80%, {{ accent_color }} 20%))">
+                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <h4 class="font-semibold mb-2 text-white">Quick Response</h4>
+              <p class="text-white/70 text-sm">Same day callback guaranteed</p>
+            </div>
+            <div class="text-center group">
+              <div class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300"
+                   style="background: linear-gradient(135deg, {{ secondary_color }}, color-mix(in srgb, {{ secondary_color }} 80%, {{ primary_color }} 20%))">
+                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <h4 class="font-semibold mb-2 text-white">Transparent Pricing</h4>
+              <p class="text-white/70 text-sm">No hidden fees or surprises</p>
+            </div>
+            <div class="text-center group">
+              <div class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300"
+                   style="background: linear-gradient(135deg, #10B981, #34D399)">
+                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <h4 class="font-semibold mb-2 text-white">Licensed & Insured</h4>
+              <p class="text-white/70 text-sm">Fully protected and certified</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    {% else %}
+      <!-- STANDARD CONTENT: Modern balanced layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <!-- Contact Information with modern styling -->
+        <div>
+          <h2 class="contact-header text-4xl lg:text-5xl font-bold mb-6">
+            {{ heading or 'Get In Touch' }}
+          </h2>
+          
+          <p class="text-xl text-white/90 mb-8 leading-relaxed" style="font-family: {{ primary_font }}">
+            {{ short_copy or original_text or 'Ready to get started on your project? Contact us today for a free consultation and quote. Our expert team is standing by to help.' }}
+          </p>
+          
+          <!-- Modern contact methods -->
+          <div class="space-y-6 mb-8">
+            {% if has_phone %}
+              <div class="contact-card flex items-center p-6 rounded-2xl transition-all duration-500 hover:shadow-xl group">
+                <div class="contact-method-icon flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <h3 class="text-lg font-semibold text-white">Call Us</h3>
+                  <a href="tel:{{ phone_number }}" class="text-white/80 hover:text-white transition-colors duration-300 group-hover:translate-x-1">{{ phone_number }}</a>
+                </div>
+              </div>
+            {% endif %}
+            
+            {% if has_email %}
+              <div class="contact-card flex items-center p-6 rounded-2xl transition-all duration-500 hover:shadow-xl group">
+                <div class="contact-method-icon flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                     style="background: linear-gradient(135deg, {{ accent_color }}, color-mix(in srgb, {{ accent_color }} 80%, {{ primary_color }} 20%))">
+                  <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <h3 class="text-lg font-semibold text-white">Email Us</h3>
+                  <a href="mailto:{{ email }}" class="text-white/80 hover:text-white transition-colors duration-300 group-hover:translate-x-1">{{ email }}</a>
+                </div>
+              </div>
+            {% endif %}
+            
+            <div class="contact-card flex items-center p-6 rounded-2xl">
+              <div class="contact-method-icon flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
+                   style="background: linear-gradient(135deg, {{ secondary_color }}, color-mix(in srgb, {{ secondary_color }} 80%, {{ primary_color }} 20%))">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-lg font-semibold text-white">Business Hours</h3>
+                {% if industry == 'restaurant' %}
+                  <p class="text-white/80">Lunch: 11:30 AM - 2:30 PM</p>
+                  <p class="text-white/80">Dinner: 5:00 PM - 10:00 PM</p>
+                {% else %}
+                  <p class="text-white/80">Monday - Friday: 7AM - 6PM</p>
+                  <p class="text-white/80">Saturday: 8AM - 4PM</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Modern action buttons -->
+          <div class="flex flex-col sm:flex-row gap-4">
+            {% if has_phone %}
+              <a href="tel:{{ phone_number }}" class="cta-primary flex-1 text-white font-semibold py-4 px-6 rounded-2xl text-center transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                Call Now
+              </a>
+            {% endif %}
+            
+            <a href="#" class="cta-secondary flex-1 text-white font-semibold py-4 px-6 rounded-2xl text-center transition-all duration-300 hover:bg-white/20">
+              Get Quote
+            </a>
+          </div>
+        </div>
+        
+        <!-- Enhanced Contact Form -->
+        <div class="contact-card rounded-3xl p-8 transition-all duration-500 hover:shadow-2xl">
+          <h3 class="text-2xl font-bold mb-6 text-white" style="font-family: {{ heading_font }}">Send Message</h3>
+          
+          <form class="space-y-6">
+            <div>
+              <label for="name" class="block text-sm font-medium text-white/80 mb-2">Name *</label>
+              <input type="text" id="name" name="name" required 
+                     class="form-input w-full px-4 py-3 rounded-2xl text-white placeholder-white/50 focus:outline-none transition-all duration-300" 
+                     placeholder="Your name">
+            </div>
+            
+            <div>
+              <label for="email" class="block text-sm font-medium text-white/80 mb-2">Email *</label>
+              <input type="email" id="email" name="email" required 
+                     class="form-input w-full px-4 py-3 rounded-2xl text-white placeholder-white/50 focus:outline-none transition-all duration-300" 
+                     placeholder="your@email.com">
+            </div>
+            
+            <div>
+              <label for="phone" class="block text-sm font-medium text-white/80 mb-2">Phone</label>
+              <input type="tel" id="phone" name="phone" 
+                     class="form-input w-full px-4 py-3 rounded-2xl text-white placeholder-white/50 focus:outline-none transition-all duration-300" 
+                     placeholder="Your phone number">
+            </div>
+            
+            <div>
+              <label for="message" class="block text-sm font-medium text-white/80 mb-2">Message *</label>
+              <textarea id="message" name="message" rows="4" required 
+                        class="form-input w-full px-4 py-3 rounded-2xl text-white placeholder-white/50 focus:outline-none transition-all duration-300 resize-none" 
+                        placeholder="Tell us about your project..."></textarea>
+            </div>
+            
+            <button type="submit" class="cta-primary w-full text-white font-semibold py-4 px-8 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white/20">
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>

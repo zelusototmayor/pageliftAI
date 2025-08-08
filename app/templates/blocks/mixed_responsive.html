@@ -1,0 +1,403 @@
+<!-- Content-Responsive Mixed/Hybrid Section -->
+{% set content_length = (original_text or short_copy or '')|length %}
+{% set has_images = img_urls and img_urls|length > 0 %}
+{% set has_phone = phone_number and phone_number != '#' %}
+{% set has_email = email and email != '#' %}
+{% set is_minimal = content_length < 100 %}
+{% set is_rich = content_length > 300 %}
+
+<!-- Dynamic background based on content type -->
+{% set bg_class = "bg-gradient-to-br from-blue-50 via-white to-orange-50" %}
+
+<section class="{% if is_minimal %}py-16{% elif is_rich %}py-24{% else %}py-20{% endif %} {{ bg_class }}">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    {% if is_minimal %}
+      <!-- MINIMAL CONTENT: Simple mixed content card -->
+      <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div class="mb-6">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+              </svg>
+            </div>
+            
+            <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+              {{ heading or 'Professional Service Information' }}
+            </h2>
+          </div>
+          
+          <p class="text-lg text-gray-600 leading-relaxed mb-6">
+            {{ short_copy or original_text or 'Important information about our professional services and how we can help you.' }}
+          </p>
+          
+          <!-- Quick action for minimal mixed content -->
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            {% if has_phone %}
+              <a href="tel:{{ phone_number }}" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-200">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                </svg>
+                Call Now
+              </a>
+            {% endif %}
+            
+            <a href="#contact" class="inline-flex items-center px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-all duration-200">
+              Learn More
+            </a>
+          </div>
+        </div>
+      </div>
+      
+    {% elif is_rich %}
+      <!-- RICH CONTENT: Comprehensive mixed content layout -->
+      <div class="space-y-16">
+        <!-- Header section -->
+        <div class="text-center">
+          <div class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-100 to-orange-100 rounded-full text-sm font-semibold text-gray-700 mb-6">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+            </svg>
+            Multi-Purpose Information
+          </div>
+          
+          <h2 class="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
+            {{ heading or 'Comprehensive Service Information' }}
+          </h2>
+          
+          <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+            {{ short_copy or original_text or 'This section contains important information about our services, company background, and how to get in touch with our professional team for your specific needs.' }}
+          </p>
+        </div>
+        
+        <!-- Multi-column rich content layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <!-- Main content area -->
+          <div class="space-y-8">
+            <!-- Service information card -->
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+              <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                    <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
+                  </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 ml-4">Our Services</h3>
+              </div>
+              
+              <p class="text-gray-600 leading-relaxed mb-6">
+                We provide comprehensive professional services designed to meet your specific needs with excellence and reliability.
+              </p>
+              
+              <div class="space-y-3">
+                <div class="flex items-center text-gray-700">
+                  <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                  Professional consultation and planning
+                </div>
+                <div class="flex items-center text-gray-700">
+                  <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                  Expert implementation and execution
+                </div>
+                <div class="flex items-center text-gray-700">
+                  <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                  Ongoing support and maintenance
+                </div>
+              </div>
+            </div>
+            
+            <!-- Company information card -->
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+              <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 ml-4">About Our Company</h3>
+              </div>
+              
+              <p class="text-gray-600 leading-relaxed mb-6">
+                With years of experience and a commitment to excellence, we've built a reputation for delivering outstanding results and exceptional customer service.
+              </p>
+              
+              <div class="grid grid-cols-2 gap-6">
+                <div class="text-center">
+                  <div class="text-3xl font-bold text-blue-600 mb-1">20+</div>
+                  <div class="text-gray-600 text-sm">Years Experience</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-3xl font-bold text-green-600 mb-1">500+</div>
+                  <div class="text-gray-600 text-sm">Happy Customers</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Contact and visual area -->
+          <div class="space-y-8">
+            {% if has_images %}
+              <div class="relative rounded-2xl overflow-hidden shadow-xl">
+                <img src="{{ img_urls[0] }}" alt="Professional Service" class="w-full h-80 object-cover"/>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                
+                <!-- Floating contact card -->
+                <div class="absolute bottom-6 left-6 right-6 bg-white bg-opacity-95 backdrop-blur-sm rounded-xl p-6">
+                  <h4 class="text-lg font-semibold text-gray-900 mb-4">Get In Touch</h4>
+                  
+                  <div class="space-y-3">
+                    {% if has_phone %}
+                      <a href="tel:{{ phone_number }}" class="flex items-center text-blue-600 hover:text-blue-700 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                        </svg>
+                        {{ phone_number }}
+                      </a>
+                    {% endif %}
+                    
+                    {% if has_email %}
+                      <a href="mailto:{{ email }}" class="flex items-center text-orange-600 hover:text-orange-700 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                        </svg>
+                        {{ email }}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <!-- Contact card without image -->
+              <div class="bg-gradient-to-br from-blue-600 to-orange-600 text-white rounded-2xl p-8">
+                <h4 class="text-2xl font-bold mb-6">Ready to Get Started?</h4>
+                <p class="text-blue-100 mb-6 leading-relaxed">
+                  Contact our professional team today for a consultation and personalized solution for your needs.
+                </p>
+                
+                <div class="space-y-4">
+                  {% if has_phone %}
+                    <a href="tel:{{ phone_number }}" class="flex items-center p-4 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all duration-200">
+                      <svg class="w-6 h-6 mr-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                      </svg>
+                      <div>
+                        <div class="font-semibold">Call Us Now</div>
+                        <div class="text-sm text-blue-100">{{ phone_number }}</div>
+                      </div>
+                    </a>
+                  {% endif %}
+                  
+                  <a href="#contact" class="flex items-center p-4 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all duration-200">
+                    <svg class="w-6 h-6 mr-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                    </svg>
+                    <div>
+                      <div class="font-semibold">Send Message</div>
+                      <div class="text-sm text-blue-100">Get detailed information</div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            {% endif %}
+            
+            <!-- Additional info cards -->
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+              <h4 class="text-xl font-bold text-gray-900 mb-4">Why Choose Us?</h4>
+              
+              <div class="space-y-4">
+                <div class="flex items-start">
+                  <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mt-1 mr-3">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-semibold text-gray-900">Professional Excellence</div>
+                    <div class="text-gray-600 text-sm">Certified professionals with proven expertise</div>
+                  </div>
+                </div>
+                
+                <div class="flex items-start">
+                  <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mt-1 mr-3">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-semibold text-gray-900">Satisfaction Guaranteed</div>
+                    <div class="text-gray-600 text-sm">100% satisfaction guarantee on all services</div>
+                  </div>
+                </div>
+                
+                <div class="flex items-start">
+                  <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center mt-1 mr-3">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-semibold text-gray-900">Quick Response</div>
+                    <div class="text-gray-600 text-sm">Fast response times and flexible scheduling</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Bottom CTA for rich mixed content -->
+        <div class="text-center bg-white rounded-3xl shadow-xl p-12">
+          <h3 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">Ready to Move Forward?</h3>
+          <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Whether you need our services, want to learn more about our company, or have questions, we're here to help you every step of the way.
+          </p>
+          
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#contact" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+              </svg>
+              Get Free Consultation
+            </a>
+            
+            {% if has_phone %}
+              <a href="tel:{{ phone_number }}" class="inline-flex items-center px-8 py-4 bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold rounded-lg transition-all duration-200">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                </svg>
+                Call: {{ phone_number }}
+              </a>
+            {% endif %}
+            
+            <a href="#services" class="inline-flex items-center px-8 py-4 bg-white border-2 border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white font-semibold rounded-lg transition-all duration-200">
+              View All Services
+              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+    {% else %}
+      <!-- STANDARD CONTENT: Balanced mixed content layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <!-- Content area -->
+        <div>
+          <div class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold mb-6">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            Important Information
+          </div>
+          
+          <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
+            {{ heading or 'Professional Service Information' }}
+          </h2>
+          
+          <p class="text-xl text-gray-600 leading-relaxed mb-8">
+            {{ short_copy or original_text or 'This section contains comprehensive information about our professional services, company background, and the various ways we can assist you with your specific needs and requirements.' }}
+          </p>
+          
+          <!-- Key points -->
+          <div class="space-y-4 mb-8">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mt-1">
+                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <p class="ml-4 text-gray-700 font-medium">Professional service excellence guaranteed</p>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center mt-1">
+                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <p class="ml-4 text-gray-700 font-medium">Experienced team with proven track record</p>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mt-1">
+                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <p class="ml-4 text-gray-700 font-medium">Multiple ways to connect and get started</p>
+            </div>
+          </div>
+          
+          <!-- Action buttons -->
+          <div class="flex flex-col sm:flex-row gap-4">
+            {% if has_phone %}
+              <a href="tel:{{ phone_number }}" class="inline-flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                </svg>
+                Call Now
+              </a>
+            {% endif %}
+            
+            <a href="#contact" class="inline-flex items-center px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+              </svg>
+              Get More Info
+            </a>
+          </div>
+        </div>
+        
+        <!-- Visual area -->
+        <div>
+          {% if has_images %}
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+              <img src="{{ img_urls[0] }}" alt="Professional Service" class="w-full h-96 lg:h-[500px] object-cover"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+              
+              <!-- Overlay badge -->
+              <div class="absolute top-6 left-6 bg-white bg-opacity-90 backdrop-blur-sm rounded-lg p-4">
+                <div class="flex items-center">
+                  <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-orange-500 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div class="ml-3">
+                    <div class="font-semibold text-gray-900">Professional</div>
+                    <div class="text-gray-600 text-sm">Quality Service</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <!-- Mixed content placeholder -->
+            <div class="bg-gradient-to-br from-blue-600 via-purple-600 to-orange-600 rounded-2xl p-12 text-white text-center shadow-2xl">
+              <div class="w-20 h-20 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                </svg>
+              </div>
+              <h3 class="text-2xl font-bold mb-4">Comprehensive Solutions</h3>
+              <p class="text-blue-100 text-lg leading-relaxed">
+                Professional services, company expertise, and customer support all in one place for your convenience.
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>

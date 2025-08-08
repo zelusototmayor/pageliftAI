@@ -8,7 +8,20 @@
 </head>
 <body class="bg-gray-50">
   {% for section in sections %}
-    {% include 'blocks/' ~ section.category ~ '.html' ignore missing %}
+    <!-- Render section {{ section.section_id }}: {{ section.category }} -->
+    {% if section.category in ['hero', 'about', 'services', 'gallery', 'contact'] %}
+      {% with section_id=section.section_id, category=section.category, heading=section.heading, short_copy=section.short_copy, original_text=section.original_text, img_urls=section.img_urls, phone_number=section.phone_number, email=section.email, business_data=section.business_data, classes=section.classes, id=section.id, confidence=section.confidence, reasoning=section.reasoning, is_hybrid=section.is_hybrid, hybrid_categories=section.hybrid_categories %}
+        {% include 'blocks/' ~ section.category ~ '_responsive.html' %}
+      {% endwith %}
+    {% elif section.category.endswith('_mixed') %}
+      {% with section_id=section.section_id, category=section.category, heading=section.heading, short_copy=section.short_copy, original_text=section.original_text, img_urls=section.img_urls, phone_number=section.phone_number, email=section.email, business_data=section.business_data, classes=section.classes, id=section.id, confidence=section.confidence, reasoning=section.reasoning, is_hybrid=section.is_hybrid, hybrid_categories=section.hybrid_categories %}
+        {% include 'blocks/mixed_responsive.html' %}
+      {% endwith %}
+    {% else %}
+      {% with section_id=section.section_id, category=section.category, heading=section.heading, short_copy=section.short_copy, original_text=section.original_text, img_urls=section.img_urls, phone_number=section.phone_number, email=section.email, business_data=section.business_data, classes=section.classes, id=section.id %}
+        {% include 'blocks/other.html' %}
+      {% endwith %}
+    {% endif %}
   {% endfor %}
 </body>
 </html> 

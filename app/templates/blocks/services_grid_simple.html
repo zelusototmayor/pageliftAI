@@ -1,0 +1,60 @@
+<!-- Simple Services Grid - Minimal Layout -->
+{% set services_list = services or [] %}
+{% set has_services = services_list|length > 0 %}
+
+{% if has_services %}
+<section class="services-section py-section-md bg-gray-50">
+  <div class="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Services</h2>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Professional services designed to meet your needs
+      </p>
+    </div>
+    
+    <!-- Services Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ min(services_list|length, 3) }} gap-8">
+      {% for service in services_list[:6] %}
+        <div class="service-card bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <!-- Service Icon -->
+          <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          
+          <!-- Service Content -->
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">
+            {{ service.name or service.title or 'Professional Service' }}
+          </h3>
+          
+          <p class="text-gray-600 mb-4">
+            {{ service.description or 'Expert service delivered with professionalism and quality.' }}
+          </p>
+          
+          <!-- Optional Price -->
+          {% if service.price %}
+            <div class="text-lg font-semibold text-blue-600">
+              {{ service.price }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    
+    <!-- Call to Action -->
+    {% if phone_number %}
+      <div class="text-center mt-12">
+        <a href="tel:{{ phone_number }}" 
+           class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-300 touch-target">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+          Call Now: {{ phone_number }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}

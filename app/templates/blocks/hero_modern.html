@@ -1,0 +1,436 @@
+<!-- Modern Brand-Aware Hero Section -->
+{% set content_length = (original_text or short_copy or '')|length %}
+{% set has_phone = phone_number and phone_number != '#' %}
+{% set is_minimal = content_length < 100 %}
+{% set is_rich = content_length > 300 %}
+
+<!-- Extract brand colors with fallbacks -->
+{% set primary_color = brand_identity.colors.primary or '#3B82F6' %}
+{% set secondary_color = brand_identity.colors.secondary or '#64748B' %}
+{% set accent_color = brand_identity.colors.accent or '#F59E0B' %}
+{% set text_primary = brand_identity.colors.text_primary or '#111827' %}
+{% set background_color = brand_identity.colors.background or '#FFFFFF' %}
+
+<!-- Typography settings -->
+{% set heading_font = typography.heading_font or 'Inter, system-ui, sans-serif' %}
+{% set primary_font = typography.primary_font or 'Inter, system-ui, sans-serif' %}
+
+<!-- Industry and tone settings -->
+{% set industry = brand_identity.brand.industry or 'business' %}
+{% set tone = brand_identity.brand.tone or 'professional' %}
+
+<!-- Image settings -->
+{% set hero_image = image_set.primary_image %}
+{% set has_hero_image = hero_image and hero_image.url %}
+
+<style>
+  /* Dynamic CSS based on brand identity */
+  .hero-section {
+    --brand-primary: {{ primary_color }};
+    --brand-secondary: {{ secondary_color }};
+    --brand-accent: {{ accent_color }};
+    --brand-text: {{ text_primary }};
+    --brand-background: {{ background_color }};
+    --hero-gradient: linear-gradient(135deg, 
+      color-mix(in srgb, var(--brand-primary) 90%, #000 10%), 
+      color-mix(in srgb, var(--brand-primary) 70%, var(--brand-secondary) 30%)
+    );
+  }
+  
+  .hero-title {
+    font-family: {{ heading_font }};
+    background: linear-gradient(135deg, #ffffff 0%, color-mix(in srgb, #ffffff 80%, var(--brand-accent) 20%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .hero-subtitle {
+    font-family: {{ primary_font }};
+    color: color-mix(in srgb, #ffffff 85%, var(--brand-primary) 15%);
+  }
+  
+  .hero-cta-primary {
+    background: linear-gradient(135deg, var(--brand-accent), color-mix(in srgb, var(--brand-accent) 80%, #ffffff 20%));
+    box-shadow: 0 10px 25px color-mix(in srgb, var(--brand-accent) 30%, transparent 70%);
+  }
+  
+  .hero-cta-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid color-mix(in srgb, #ffffff 40%, transparent 60%);
+    backdrop-filter: blur(10px);
+  }
+  
+  {% if has_hero_image %}
+  .hero-image-overlay {
+    background: linear-gradient(135deg, 
+      color-mix(in srgb, var(--brand-primary) 95%, transparent 5%) 0%,
+      color-mix(in srgb, var(--brand-primary) 60%, transparent 40%) 50%,
+      color-mix(in srgb, var(--brand-primary) 90%, transparent 10%) 100%
+    );
+  }
+  {% endif %}
+</style>
+
+<section class="hero-section relative min-h-screen flex items-center justify-center overflow-hidden py-section-lg">
+  <!-- Dynamic Background -->
+  {% if has_hero_image %}
+    <!-- Hero with Image Background -->
+    <div class="absolute inset-0">
+      <img 
+        src="{{ hero_image.url }}" 
+        alt="{{ hero_image.alt_text }}"
+        class="w-full h-full object-cover"
+        {% if not hero_image.lazy_load %}fetchpriority="high"{% endif %}
+      >
+      <div class="hero-image-overlay absolute inset-0"></div>
+    </div>
+  {% else %}
+    <!-- Gradient Background -->
+    <div class="absolute inset-0 bg-gradient-to-br" style="background: var(--hero-gradient)"></div>
+  {% endif %}
+  
+  <!-- Modern Pattern Overlay -->
+  <div class="absolute inset-0 opacity-5">
+    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <defs>
+        <pattern id="hero-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="10" cy="10" r="2" fill="currentColor" opacity="0.3"/>
+          <circle cx="5" cy="5" r="1" fill="currentColor" opacity="0.2"/>
+          <circle cx="15" cy="15" r="1" fill="currentColor" opacity="0.2"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#hero-pattern)" />
+    </svg>
+  </div>
+  
+  <!-- Content Container -->
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+    
+    {% if is_minimal %}
+      <!-- MINIMAL LAYOUT: Clean, centered design -->
+      <div class="text-center max-w-4xl mx-auto">
+        <!-- Floating Badge -->
+        <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-medium mb-8">
+          <div class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+          Available 24/7 • Professional Service
+        </div>
+        
+        <h1 class="hero-title text-responsive-lg font-bold leading-none mb-8 tracking-tight">
+          {{ heading or 'Professional Service You Can Trust' }}
+        </h1>
+        
+        <p class="hero-subtitle text-xl lg:text-2xl mb-12 leading-relaxed max-w-3xl mx-auto">
+          {{ short_copy or original_text or 'Expert solutions for your home and business needs. Available 24/7 for emergency service.' }}
+        </p>
+        
+        <!-- CTA Section -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16">
+          {% if has_phone %}
+            <a href="tel:{{ phone_number }}" 
+               class="hero-cta-primary btn-responsive group inline-flex items-center text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl touch-target">
+              <svg class="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+              </svg>
+              Call Now: {{ phone_number }}
+            </a>
+          {% endif %}
+          
+          <a href="#services" 
+             class="hero-cta-secondary group inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 hover:bg-white/20 text-lg">
+            Learn More
+            <svg class="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+        
+        <!-- Trust Indicators -->
+        <div class="flex items-center justify-center space-x-8 mt-16 text-white/70">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span class="text-sm font-medium">Licensed & Insured</span>
+          </div>
+          <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span class="text-sm font-medium">24/7 Emergency</span>
+          </div>
+          <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span class="text-sm font-medium">Free Estimates</span>
+          </div>
+        </div>
+      </div>
+    
+    {% elif is_rich %}
+      <!-- RICH LAYOUT: Two-column with detailed content -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center min-h-screen py-20">
+        <!-- Content Column -->
+        <div class="text-left order-2 lg:order-1">
+          <!-- Premium Badge -->
+          <div class="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-yellow-400/20 to-orange-400/20 backdrop-blur-md border border-yellow-400/30 text-yellow-100 text-sm font-semibold mb-8">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+            Premium Professional Service
+          </div>
+          
+          <h1 class="hero-title text-5xl sm:text-6xl lg:text-7xl font-bold leading-none mb-8 tracking-tight">
+            {{ heading or 'Expert Solutions for Every Need' }}
+          </h1>
+          
+          <!-- Rich content with smart formatting -->
+          <div class="hero-subtitle text-xl lg:text-2xl mb-10 leading-relaxed space-y-4">
+            {% if original_text and original_text|length > 200 %}
+              {% set paragraphs = original_text.split('\n') %}
+              {% for paragraph in paragraphs[:2] %}
+                {% if paragraph.strip() %}
+                  <p>{{ paragraph.strip() }}</p>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <p>{{ short_copy or original_text or 'Comprehensive solutions delivered by experienced professionals. We combine expertise with modern techniques to exceed your expectations.' }}</p>
+            {% endif %}
+          </div>
+          
+          <!-- Advanced CTA Section -->
+          <div class="flex flex-col sm:flex-row gap-6 mb-12">
+            {% if has_phone %}
+              <a href="tel:{{ phone_number }}" 
+                 class="hero-cta-primary group inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                <svg class="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                </svg>
+                {{ phone_number }}
+              </a>
+            {% endif %}
+            
+            <a href="#contact" 
+               class="hero-cta-secondary group inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 hover:bg-white/20">
+              <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+              </svg>
+              Get Free Quote
+            </a>
+            
+            <a href="#services" 
+               class="group inline-flex items-center px-8 py-4 text-white/90 font-medium transition-all duration-300 hover:text-white">
+              Learn More
+              <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+          
+          <!-- Detailed Trust Indicators -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-white/80">
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-green-500/20 rounded-2xl flex items-center justify-center mr-4">
+                <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div>
+                <div class="font-semibold text-sm">Licensed</div>
+                <div class="text-xs text-white/60">Fully Insured</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center mr-4">
+                <svg class="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div>
+                <div class="font-semibold text-sm">24/7</div>
+                <div class="text-xs text-white/60">Emergency Service</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center mr-4">
+                <svg class="w-6 h-6 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="font-semibold text-sm">Guaranteed</div>
+                <div class="text-xs text-white/60">Quality Work</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-orange-500/20 rounded-2xl flex items-center justify-center mr-4">
+                <svg class="w-6 h-6 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="font-semibold text-sm">Free</div>
+                <div class="text-xs text-white/60">Estimates</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Image Column -->
+        <div class="relative order-1 lg:order-2">
+          {% if has_hero_image %}
+            <div class="relative">
+              <!-- Main image with modern styling -->
+              <div class="relative rounded-3xl overflow-hidden shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                <img 
+                  src="{{ hero_image.url }}" 
+                  alt="{{ hero_image.alt_text }}"
+                  class="w-full h-96 lg:h-[600px] object-cover"
+                  {% if not hero_image.lazy_load %}fetchpriority="high"{% endif %}
+                >
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                
+                <!-- Floating info card -->
+                <div class="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-md rounded-2xl p-6 transform translate-y-2 hover:translate-y-0 transition-transform duration-300">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+                      <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-gray-900 font-semibold text-lg">Professional Excellence</div>
+                      <div class="text-gray-600">Trusted by thousands of customers</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Decorative elements -->
+              <div class="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-20 animate-pulse"></div>
+              <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 animate-pulse delay-1000"></div>
+            </div>
+          {% else %}
+            <!-- Placeholder with modern design -->
+            <div class="relative">
+              <div class="bg-white/10 backdrop-blur-md rounded-3xl p-16 text-center transform rotate-3 hover:rotate-0 transition-transform duration-500 border border-white/20">
+                <div class="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-white/20 to-white/5 rounded-3xl flex items-center justify-center">
+                  <svg class="w-16 h-16 text-white/60" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                    <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
+                  </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-4">Professional Service</h3>
+                <p class="text-white/80 text-lg">Expert solutions you can trust</p>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    
+    {% else %}
+      <!-- STANDARD LAYOUT: Balanced design -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen py-16">
+        <!-- Content Column -->
+        <div class="text-left">
+          <!-- Standard Badge -->
+          <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-medium mb-6">
+            <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+            Professional {{ industry|title }} Service
+          </div>
+          
+          <h1 class="hero-title text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 tracking-tight">
+            {{ heading or 'Professional Service You Can Trust' }}
+          </h1>
+          
+          <p class="hero-subtitle text-xl lg:text-2xl mb-10 leading-relaxed">
+            {{ short_copy or original_text or 'Expert solutions for your home and business needs. Available 24/7 for emergency service.' }}
+          </p>
+          
+          <!-- Standard CTA Section -->
+          <div class="flex flex-col sm:flex-row gap-6 mb-10">
+            <a href="#contact" 
+               class="hero-cta-primary group inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+              <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+              </svg>
+              Get Free Quote
+            </a>
+            
+            {% if has_phone %}
+              <a href="tel:{{ phone_number }}" 
+                 class="hero-cta-secondary group inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 hover:bg-white/20">
+                <svg class="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                </svg>
+                Call: {{ phone_number }}
+              </a>
+            {% endif %}
+          </div>
+          
+          <!-- Trust Indicators -->
+          <div class="flex flex-wrap items-center gap-8 text-white/70">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              Licensed & Insured
+            </div>
+            <div class="flex items-center">
+              <svg class="w-5 h-5 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              24/7 Emergency Service
+            </div>
+            <div class="flex items-center">
+              <svg class="w-5 h-5 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              Free Estimates
+            </div>
+          </div>
+        </div>
+        
+        <!-- Image Column -->
+        <div class="relative">
+          {% if has_hero_image %}
+            <div class="relative rounded-3xl overflow-hidden shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-300">
+              <img 
+                src="{{ hero_image.url }}" 
+                alt="{{ hero_image.alt_text }}"
+                class="w-full h-96 lg:h-[500px] object-cover"
+                {% if not hero_image.lazy_load %}fetchpriority="high"{% endif %}
+              >
+              <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+            </div>
+          {% else %}
+            <!-- Modern placeholder -->
+            <div class="bg-white/10 backdrop-blur-md rounded-3xl p-12 text-center transform rotate-2 hover:rotate-0 transition-transform duration-300 border border-white/20">
+              <svg class="w-24 h-24 mx-auto mb-6 text-white/40" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
+              </svg>
+              <h3 class="text-xl font-semibold text-white/90 mb-2">Professional Service</h3>
+              <p class="text-white/70">Expert technicians ready to help</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+  
+  <!-- Scroll Indicator -->
+  {% if is_rich %}
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/60 animate-bounce">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+      </svg>
+    </div>
+  {% endif %}
+</section>

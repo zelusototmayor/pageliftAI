@@ -1,0 +1,503 @@
+<!-- Modern Brand-Aware Services Section -->
+{% set content_length = (original_text or short_copy or '')|length %}
+{% set has_images = image_set.all_images and image_set.all_images|length > 0 %}
+{% set image_count = image_set.all_images|length if image_set.all_images else 0 %}
+{% set has_phone = phone_number and phone_number != '#' %}
+{% set is_minimal = content_length < 100 %}
+{% set is_rich = content_length > 300 %}
+
+<!-- Extract brand colors with fallbacks -->
+{% set primary_color = brand_identity.colors.primary or '#3B82F6' %}
+{% set secondary_color = brand_identity.colors.secondary or '#64748B' %}
+{% set accent_color = brand_identity.colors.accent or '#F59E0B' %}
+{% set text_primary = brand_identity.colors.text_primary or '#111827' %}
+{% set background_color = brand_identity.colors.background or '#FFFFFF' %}
+
+<!-- Typography settings -->
+{% set heading_font = typography.heading_font or 'Inter, system-ui, sans-serif' %}
+{% set primary_font = typography.primary_font or 'Inter, system-ui, sans-serif' %}
+
+<!-- Industry and tone settings -->
+{% set industry = brand_identity.brand.industry or 'business' %}
+{% set tone = brand_identity.brand.tone or 'professional' %}
+
+<style>
+  /* Dynamic CSS based on brand identity */
+  .services-section {
+    --brand-primary: {{ primary_color }};
+    --brand-secondary: {{ secondary_color }};
+    --brand-accent: {{ accent_color }};
+    --brand-text: {{ text_primary }};
+    --brand-background: {{ background_color }};
+    --services-gradient: linear-gradient(135deg, 
+      color-mix(in srgb, var(--brand-primary) 95%, #ffffff 5%), 
+      color-mix(in srgb, var(--brand-primary) 85%, var(--brand-secondary) 15%)
+    );
+  }
+  
+  .service-card {
+    background: color-mix(in srgb, var(--brand-background) 95%, var(--brand-primary) 5%);
+    border: 1px solid color-mix(in srgb, var(--brand-primary) 10%, transparent 90%);
+    backdrop-filter: blur(10px);
+  }
+  
+  .service-card:hover {
+    background: color-mix(in srgb, var(--brand-background) 98%, var(--brand-primary) 2%);
+    border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent 70%);
+    box-shadow: 0 25px 50px color-mix(in srgb, var(--brand-primary) 15%, transparent 85%);
+  }
+  
+  .service-icon {
+    background: linear-gradient(135deg, var(--brand-primary), color-mix(in srgb, var(--brand-primary) 80%, var(--brand-accent) 20%));
+  }
+  
+  .service-title {
+    font-family: {{ heading_font }};
+    color: var(--brand-text);
+  }
+  
+  .service-description {
+    font-family: {{ primary_font }};
+    color: color-mix(in srgb, var(--brand-text) 75%, transparent 25%);
+  }
+  
+  .cta-primary {
+    background: linear-gradient(135deg, var(--brand-accent), color-mix(in srgb, var(--brand-accent) 85%, #ffffff 15%));
+    box-shadow: 0 10px 25px color-mix(in srgb, var(--brand-accent) 30%, transparent 70%);
+  }
+  
+  .cta-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid color-mix(in srgb, var(--brand-primary) 40%, transparent 60%);
+    backdrop-filter: blur(10px);
+  }
+  
+  .section-header {
+    background: linear-gradient(135deg, 
+      color-mix(in srgb, var(--brand-text) 95%, var(--brand-primary) 5%) 0%,
+      color-mix(in srgb, var(--brand-text) 85%, var(--brand-accent) 15%) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: {{ heading_font }};
+  }
+  
+  /* Industry-specific styling adjustments */
+  {% if industry == 'plumbing' %}
+    .industry-accent { --accent: #0EA5E9; --accent-light: #38BDF8; }
+  {% elif industry == 'restaurant' %}
+    .industry-accent { --accent: #F59E0B; --accent-light: #FCD34D; }
+  {% elif industry == 'tech' %}
+    .industry-accent { --accent: #8B5CF6; --accent-light: #A78BFA; }
+  {% elif industry == 'medical' %}
+    .industry-accent { --accent: #10B981; --accent-light: #34D399; }
+  {% else %}
+    .industry-accent { --accent: var(--brand-accent); --accent-light: color-mix(in srgb, var(--brand-accent) 80%, #ffffff 20%); }
+  {% endif %}
+</style>
+
+<section class="services-section relative {% if is_minimal %}py-16{% elif is_rich %}py-32{% else %}py-24{% endif %} overflow-hidden">
+  <!-- Dynamic background with subtle pattern -->
+  <div class="absolute inset-0" style="background: linear-gradient(135deg, {{ background_color }} 0%, color-mix(in srgb, {{ primary_color }} 5%, {{ background_color }} 95%) 100%)"></div>
+  
+  <!-- Subtle pattern overlay -->
+  <div class="absolute inset-0 opacity-5">
+    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <defs>
+        <pattern id="services-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="10" cy="10" r="1.5" fill="currentColor" style="color: {{ primary_color }}" opacity="0.4"/>
+          <circle cx="5" cy="15" r="0.8" fill="currentColor" style="color: {{ accent_color }}" opacity="0.3"/>
+          <circle cx="15" cy="5" r="0.8" fill="currentColor" style="color: {{ secondary_color }}" opacity="0.2"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#services-pattern)" />
+    </svg>
+  </div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Enhanced Section Header -->
+    <div class="text-center {% if is_minimal %}mb-12{% elif is_rich %}mb-20{% else %}mb-16{% endif %}">
+      <!-- Floating badge with industry context -->
+      <div class="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8">
+        <div class="w-3 h-3 rounded-full mr-3 animate-pulse" style="background: {{ accent_color }}"></div>
+        <span class="text-sm font-semibold" style="color: {{ text_primary }}">
+          {% if industry == 'plumbing' %}Professional Plumbing Services
+          {% elif industry == 'restaurant' %}Culinary Excellence & Hospitality
+          {% elif industry == 'tech' %}Innovative Technology Solutions
+          {% elif industry == 'medical' %}Healthcare & Medical Services
+          {% else %}Professional {{ industry|title }} Services
+          {% endif %}
+        </span>
+      </div>
+      
+      <h2 class="section-header {% if is_minimal %}text-3xl lg:text-4xl{% elif is_rich %}text-4xl lg:text-6xl{% else %}text-4xl lg:text-5xl{% endif %} font-bold leading-tight mb-6">
+        {{ heading or 'Our Professional Services' }}
+      </h2>
+      
+      {% if not is_minimal %}
+        <p class="{% if is_rich %}text-xl{% else %}text-lg{% endif %} max-w-3xl mx-auto leading-relaxed mb-8 service-description">
+          {{ short_copy or original_text or 'We provide comprehensive solutions with expert craftsmanship and reliable service you can count on.' }}
+        </p>
+        
+        <!-- Modern decorative element -->
+        <div class="flex justify-center">
+          <div class="w-24 h-1 rounded-full" style="background: linear-gradient(90deg, {{ primary_color }}, {{ accent_color }})"></div>
+        </div>
+      {% endif %}
+    </div>
+    
+    <!-- Industry-Specific Service Layouts -->
+    {% if is_minimal %}
+      <!-- MINIMAL: Single service highlight -->
+      <div class="max-w-2xl mx-auto">
+        {% if has_images and image_count >= 1 %}
+          <div class="service-card text-center rounded-3xl p-8 shadow-2xl transform hover:scale-105 transition-all duration-500">
+            <div class="relative w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-lg">
+              <img src="{{ image_set.primary_image.url }}" 
+                   alt="{{ image_set.primary_image.alt_text }}"
+                   class="w-full h-full object-cover"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
+            <h3 class="service-title text-2xl font-bold mb-4">Professional Service</h3>
+            <p class="service-description mb-6">{{ short_copy or original_text or 'Expert solutions for your needs' }}</p>
+            
+            <a href="#contact" class="cta-primary inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+              Get Started
+              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        {% else %}
+          <div class="service-card text-center rounded-3xl p-8 shadow-2xl">
+            <div class="service-icon w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-6">
+              <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
+              </svg>
+            </div>
+            <h3 class="service-title text-xl font-bold mb-3">Expert Service</h3>
+            <p class="service-description mb-6">{{ short_copy or original_text or 'Professional solutions you can trust' }}</p>
+            
+            <a href="#contact" class="cta-primary inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105">
+              Get Started
+            </a>
+          </div>
+        {% endif %}
+      </div>
+      
+    {% elif is_rich %}
+      <!-- RICH CONTENT: Advanced grid with extensive information -->
+      {% if has_images and image_count >= 3 %}
+        <!-- Image-rich modern layout -->
+        <div class="grid-responsive-3 gap-8 mb-16">
+          {% for image in image_set.all_images[:9] %}
+            <div class="group service-card rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+              <div class="relative overflow-hidden">
+                <img src="{{ image.url }}" 
+                     alt="{{ image.alt_text }}"
+                     class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700"
+                     {% if image.lazy_load %}loading="lazy"{% else %}fetchpriority="high"{% endif %}/>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <!-- Modern overlay elements -->
+                <div class="absolute top-4 left-4 w-10 h-10 rounded-2xl flex items-center justify-center text-white font-bold text-sm transition-all duration-300 group-hover:scale-110"
+                     style="background: {{ accent_color }}">
+                  {{ loop.index }}
+                </div>
+                
+                <div class="absolute bottom-4 left-4 right-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                  <div class="bg-white/95 backdrop-blur-md rounded-2xl p-4">
+                    <div class="flex items-center justify-between">
+                      <div class="service-title font-semibold">Service {{ loop.index }}</div>
+                      <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="p-6">
+                <h3 class="service-title text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors duration-300">
+                  Professional Service {{ loop.index }}
+                </h3>
+                <p class="service-description mb-4 leading-relaxed">
+                  Comprehensive solutions with expert craftsmanship and attention to detail for optimal results.
+                </p>
+                
+                <!-- Enhanced features for rich content -->
+                <div class="grid grid-cols-2 gap-2 mb-4 text-sm">
+                  <div class="flex items-center">
+                    <div class="w-2 h-2 rounded-full mr-2" style="background: {{ accent_color }}"></div>
+                    <span class="service-description">Licensed</span>
+                  </div>
+                  <div class="flex items-center">
+                    <div class="w-2 h-2 rounded-full mr-2" style="background: {{ primary_color }}"></div>
+                    <span class="service-description">Insured</span>
+                  </div>
+                  <div class="flex items-center">
+                    <div class="w-2 h-2 rounded-full mr-2" style="background: {{ secondary_color }}"></div>
+                    <span class="service-description">Guaranteed</span>
+                  </div>
+                  <div class="flex items-center">
+                    <div class="w-2 h-2 rounded-full mr-2" style="background: {{ accent_color }}"></div>
+                    <span class="service-description">24/7 Support</span>
+                  </div>
+                </div>
+                
+                <a href="#contact" class="inline-flex items-center font-semibold transition-all duration-300 group-hover:translate-x-1"
+                   style="color: {{ primary_color }}">
+                  Learn More
+                  <svg class="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Rich content with industry-specific service categories -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+          {% if industry == 'plumbing' %}
+            {% set rich_services = [
+              {'icon': 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547A8.014 8.014 0 004 21h4.286a1 1 0 00.98-.804l1.58-7.11a1 1 0 01.98-.804h.673a1 1 0 01.98.804l1.58 7.11A1 1 0 0015.714 21H20a8.014 8.014 0 00-.572-5.572z', 'title': 'Emergency Plumbing', 'desc': 'Available 24/7 for burst pipes, water heater failures, and urgent plumbing emergencies.', 'features': ['24/7 Emergency Service', 'Licensed Plumbers', 'Advanced Equipment', 'Rapid Response']},
+              {'icon': 'M13 10V3L4 14h7v7l9-11h-7z', 'title': 'Water Heater Services', 'desc': 'Complete water heater installation, repair, and maintenance for all makes and models.', 'features': ['Installation & Repair', 'Energy Efficient Options', 'Maintenance Plans', 'Warranty Coverage']},
+              {'icon': 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707', 'title': 'Pipe Installation', 'desc': 'Professional pipe installation and replacement using modern materials and techniques.', 'features': ['Modern Materials', 'Leak Detection', 'Pressure Testing', 'Code Compliant']},
+              {'icon': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'title': 'Drain Cleaning', 'desc': 'Professional drain cleaning and sewer line services to keep your plumbing flowing smoothly.', 'features': ['Hydro Jetting', 'Camera Inspection', 'Root Removal', 'Preventive Maintenance']}
+            ] %}
+          {% elif industry == 'restaurant' %}
+            {% set rich_services = [
+              {'icon': 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', 'title': 'Fine Dining Experience', 'desc': 'Exceptional culinary artistry with fresh, locally sourced ingredients and impeccable presentation.', 'features': ['Farm-to-Table', 'Expert Chefs', 'Wine Pairings', 'Private Events']},
+              {'icon': 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1', 'title': 'Catering Services', 'desc': 'Full-service catering for corporate events, weddings, and special occasions with customized menus.', 'features': ['Event Planning', 'Custom Menus', 'Professional Service', 'Dietary Accommodations']},
+              {'icon': 'M13 10V3L4 14h7v7l9-11h-7z', 'title': 'Takeout & Delivery', 'desc': 'Fast, reliable takeout and delivery service bringing restaurant quality food to your doorstep.', 'features': ['Online Ordering', 'Quick Delivery', 'Fresh Packaging', 'Contactless Options']},
+              {'icon': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'title': 'Private Dining', 'desc': 'Intimate private dining rooms and personalized service for special occasions and business meetings.', 'features': ['Private Rooms', 'Custom Menus', 'Dedicated Service', 'AV Equipment']}
+            ] %}
+          {% else %}
+            {% set rich_services = [
+              {'icon': 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547A8.014 8.014 0 004 21h4.286a1 1 0 00.98-.804l1.58-7.11a1 1 0 01.98-.804h.673a1 1 0 01.98.804l1.58 7.11A1 1 0 0015.714 21H20a8.014 8.014 0 00-.572-5.572z', 'title': 'Emergency Services', 'desc': 'Round-the-clock emergency response for urgent situations requiring immediate professional attention.', 'features': ['24/7 Availability', 'Rapid Response', 'Emergency Equipment', 'Expert Technicians']},
+              {'icon': 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z', 'title': 'Maintenance & Repairs', 'desc': 'Comprehensive maintenance programs and repair services to keep your systems operating at peak performance.', 'features': ['Preventive Maintenance', 'Quality Repairs', 'System Optimization', 'Performance Monitoring']},
+              {'icon': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'title': 'Installation & Setup', 'desc': 'Professional installation services with comprehensive setup, testing, and warranty coverage for your peace of mind.', 'features': ['Expert Installation', 'System Testing', 'Warranty Coverage', 'Follow-up Support']},
+              {'icon': 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1', 'title': 'Consultation & Planning', 'desc': 'Expert consultation services to help you plan, budget, and execute your projects with confidence and clarity.', 'features': ['Free Consultation', 'Project Planning', 'Budget Analysis', 'Implementation Strategy']}
+            ] %}
+          {% endif %}
+          
+          {% for service in rich_services %}
+            <div class="group service-card rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2">
+              <div class="flex items-start mb-6">
+                <div class="service-icon flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="{{ service.icon }}" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <div class="ml-6">
+                  <h3 class="service-title text-2xl font-bold mb-2 group-hover:text-blue-600 transition-colors duration-300">{{ service.title }}</h3>
+                </div>
+              </div>
+              
+              <p class="service-description leading-relaxed mb-6">{{ service.desc }}</p>
+              
+              <div class="grid grid-cols-2 gap-3 mb-6">
+                {% for feature in service.features %}
+                  <div class="flex items-center text-sm">
+                    <div class="w-2 h-2 rounded-full mr-3 flex-shrink-0" style="background: {{ accent_color }}"></div>
+                    <span class="service-description">{{ feature }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+              
+              <a href="#contact" class="inline-flex items-center font-semibold transition-all duration-300 group-hover:translate-x-2"
+                 style="color: {{ primary_color }}">
+                Learn More & Get Quote
+                <svg class="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      
+      <!-- Rich content premium CTA section -->
+      <div class="relative rounded-4xl p-12 text-center overflow-hidden"
+           style="background: var(--services-gradient)">
+        <div class="absolute inset-0 opacity-10">
+          <svg class="w-full h-full" viewBox="0 0 100 100">
+            <defs>
+              <pattern id="cta-pattern" x="0" y="0" width="25" height="25" patternUnits="userSpaceOnUse">
+                <circle cx="12.5" cy="12.5" r="2" fill="white" opacity="0.6"/>
+                <circle cx="6.25" cy="18.75" r="1" fill="white" opacity="0.4"/>
+                <circle cx="18.75" cy="6.25" r="1" fill="white" opacity="0.4"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#cta-pattern)"/>
+          </svg>
+        </div>
+        
+        <div class="relative">
+          <h3 class="text-3xl lg:text-4xl font-bold mb-6 text-white">Ready to Experience Excellence?</h3>
+          <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
+            {{ short_copy or 'Our comprehensive services are designed to exceed your expectations with professional excellence and guaranteed satisfaction.' }}
+          </p>
+          
+          <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <a href="#contact" class="cta-primary inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+              </svg>
+              Get Free Consultation
+            </a>
+            
+            {% if has_phone %}
+              <a href="tel:{{ phone_number }}" class="cta-secondary inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 hover:bg-white/20">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                </svg>
+                Call: {{ phone_number }}
+              </a>
+            {% endif %}
+            
+            <a href="#about" class="cta-secondary inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 hover:bg-white/20">
+              Learn About Us
+              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+          
+          <!-- Enhanced trust indicators -->
+          <div class="flex flex-wrap justify-center gap-8 text-white/80">
+            <div class="flex items-center">
+              <svg class="w-6 h-6 mr-2 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span class="font-medium">Licensed & Insured</span>
+            </div>
+            <div class="flex items-center">
+              <svg class="w-6 h-6 mr-2 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span class="font-medium">Satisfaction Guaranteed</span>
+            </div>
+            <div class="flex items-center">
+              <svg class="w-6 h-6 mr-2 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span class="font-medium">Free Estimates</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    {% else %}
+      <!-- STANDARD CONTENT: Modern balanced layout -->
+      <div class="grid-responsive-3 gap-8 mb-16">
+        {% if has_images and image_count >= 3 %}
+          {% for image in image_set.all_images[:6] %}
+            <div class="group service-card rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+              <div class="relative overflow-hidden">
+                <img src="{{ image.url }}" 
+                     alt="{{ image.alt_text }}"
+                     class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                     {% if image.lazy_load %}loading="lazy"{% else %}fetchpriority="high"{% endif %}/>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div class="absolute bottom-4 left-4 right-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                  <div class="bg-white/95 backdrop-blur-md rounded-xl p-3">
+                    <div class="service-title font-semibold text-sm">Professional Service {{ loop.index }}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="p-6">
+                <h3 class="service-title text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors duration-300">
+                  Service {{ loop.index }}
+                </h3>
+                <p class="service-description mb-4 leading-relaxed">
+                  Expert solutions tailored to your specific needs with guaranteed satisfaction.
+                </p>
+                
+                <a href="#contact" class="inline-flex items-center font-semibold transition-all duration-300 group-hover:translate-x-1"
+                   style="color: {{ primary_color }}">
+                  Learn More
+                  <svg class="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <!-- Standard service cards with icons -->
+          {% set standard_services = [
+            {'icon': 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547A8.014 8.014 0 004 21h4.286a1 1 0 00.98-.804l1.58-7.11a1 1 0 01.98-.804h.673a1 1 0 01.98.804l1.58 7.11A1 1 0 0015.714 21H20a8.014 8.014 0 00-.572-5.572z', 'title': 'Emergency Service', 'desc': '24/7 emergency service for urgent repairs and maintenance needs'},
+            {'icon': 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z', 'title': 'Maintenance', 'desc': 'Regular maintenance services to keep your systems running smoothly'},
+            {'icon': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'title': 'Installation', 'desc': 'Professional installation services with warranty and quality guarantee'},
+            {'icon': 'M13 10V3L4 14h7v7l9-11h-7z', 'title': 'Quick Response', 'desc': 'Fast response times and efficient service to minimize downtime'},
+            {'icon': 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1', 'title': 'Fair Pricing', 'desc': 'Competitive rates with transparent pricing and no hidden fees'},
+            {'icon': 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'title': 'Guaranteed Work', 'desc': 'Your satisfaction is our priority with quality workmanship guarantee'}
+          ] %}
+          
+          {% for service in standard_services %}
+            <div class="group service-card rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+              <div class="service-icon flex items-center justify-center w-16 h-16 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="{{ service.icon }}" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              
+              <h3 class="service-title text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors duration-300">
+                {{ service.title }}
+              </h3>
+              
+              <p class="service-description leading-relaxed mb-4">
+                {{ service.desc }}
+              </p>
+              
+              <a href="#contact" class="inline-flex items-center font-semibold transition-all duration-300 group-hover:translate-x-1"
+                 style="color: {{ primary_color }}">
+                Get Started
+                <svg class="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      
+      <!-- Standard modern CTA -->
+      <div class="service-card text-center rounded-3xl p-12 shadow-2xl">
+        <h3 class="service-title text-3xl font-bold mb-4">
+          Ready to Get Started? We're Here to Help!
+        </h3>
+        <p class="service-description text-xl mb-8 max-w-2xl mx-auto">
+          Get a free consultation and quote for your project. Our expert team is ready to provide the solutions you need.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="#contact" class="cta-primary inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+            </svg>
+            Get Free Quote
+          </a>
+          
+          {% if has_phone %}
+            <a href="tel:{{ phone_number }}" class="cta-secondary inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 hover:bg-white/20"
+               style="border-color: {{ primary_color }}; color: {{ primary_color }}">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+              </svg>
+              Call Now
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>

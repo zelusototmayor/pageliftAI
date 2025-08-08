@@ -1,0 +1,295 @@
+<!-- Content-Responsive Gallery Section -->
+{% set content_length = (original_text or short_copy or '')|length %}
+{% set has_images = img_urls and img_urls|length > 0 %}
+{% set image_count = img_urls|length if img_urls else 0 %}
+{% set is_minimal = content_length < 100 %}
+{% set is_rich = content_length > 300 %}
+
+<section class="{% if is_minimal %}py-16{% elif is_rich %}py-24{% else %}py-20{% endif %} bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    {% if is_minimal %}
+      <!-- MINIMAL CONTENT: Simple image showcase -->
+      <div class="text-center mb-12">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          {{ heading or 'Our Work' }}
+        </h2>
+        {% if short_copy or original_text %}
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            {{ short_copy or original_text }}
+          </p>
+        {% endif %}
+      </div>
+      
+      {% if has_images %}
+        <div class="max-w-4xl mx-auto">
+          {% if image_count == 1 %}
+            <!-- Single image showcase -->
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+              <img src="{{ img_urls[0] }}" alt="Gallery Image" class="w-full h-96 object-cover"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+            </div>
+          {% elif image_count <= 3 %}
+            <!-- Small grid for few images -->
+            <div class="grid grid-cols-1 md:grid-cols-{{ image_count }} gap-6">
+              {% for img in img_urls %}
+                <div class="relative rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <img src="{{ img }}" alt="Gallery Image {{ loop.index }}" class="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"/>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% else %}
+        <!-- Placeholder for minimal without images -->
+        <div class="max-w-2xl mx-auto text-center bg-white rounded-2xl p-12 shadow-lg">
+          <svg class="w-20 h-20 mx-auto mb-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+          </svg>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Portfolio Gallery</h3>
+          <p class="text-gray-600">{{ short_copy or original_text or 'Professional work showcase coming soon' }}</p>
+        </div>
+      {% endif %}
+      
+    {% elif is_rich %}
+      <!-- RICH CONTENT: Comprehensive gallery with categories -->
+      <div class="text-center mb-16">
+        <h2 class="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
+          {{ heading or 'Our Portfolio Gallery' }}
+        </h2>
+        <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+          {{ short_copy or original_text or 'Explore our extensive portfolio showcasing years of professional excellence and satisfied customers. Each project represents our commitment to quality and attention to detail.' }}
+        </p>
+      </div>
+      
+      {% if has_images and image_count >= 6 %}
+        <!-- Rich image grid with categories -->
+        <div class="mb-12">
+          <!-- Category filters -->
+          <div class="flex flex-wrap justify-center gap-4 mb-12">
+            <button class="px-6 py-3 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-colors duration-200">All Projects</button>
+            <button class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 transition-colors duration-200">Recent Work</button>
+            <button class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 transition-colors duration-200">Before & After</button>
+            <button class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-300 transition-colors duration-200">Featured</button>
+          </div>
+          
+          <!-- Masonry-style grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for img in img_urls %}
+              {% set loop_index = loop.index %}
+              {% set is_featured = loop_index <= 4 %}
+              {% set span_class = "lg:col-span-2" if loop_index % 5 == 0 else "" %}
+              
+              <div class="group relative {{ span_class }} rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                <img src="{{ img }}" alt="Project {{ loop_index }}" class="w-full h-64 {{ 'lg:h-80' if span_class else '' }} object-cover group-hover:scale-110 transition-transform duration-500"/>
+                
+                <!-- Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <!-- Content overlay -->
+                <div class="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-6 group-hover:translate-y-0 transition-transform duration-300">
+                  <h3 class="text-lg font-semibold mb-2">Project {{ loop_index }}</h3>
+                  <p class="text-sm text-gray-200">Professional {{ 'featured ' if is_featured else '' }}service completion</p>
+                  
+                  {% if is_featured %}
+                    <div class="mt-3">
+                      <span class="inline-block px-3 py-1 bg-orange-500 text-white rounded-full text-xs font-medium">Featured Work</span>
+                    </div>
+                  {% endif %}
+                </div>
+                
+                <!-- View button -->
+                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button class="w-10 h-10 bg-white bg-opacity-20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        
+        <!-- Stats for rich gallery -->
+        <div class="bg-white rounded-3xl shadow-xl p-12 mb-12">
+          <h3 class="text-3xl font-bold text-gray-900 text-center mb-12">Project Statistics</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="text-center">
+              <div class="text-4xl font-bold text-blue-600 mb-2">{{ image_count }}+</div>
+              <div class="text-gray-600 font-medium">Completed Projects</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-bold text-green-600 mb-2">100%</div>
+              <div class="text-gray-600 font-medium">Satisfaction Rate</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-bold text-orange-600 mb-2">5★</div>
+              <div class="text-gray-600 font-medium">Average Rating</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-bold text-purple-600 mb-2">24/7</div>
+              <div class="text-gray-600 font-medium">Support Available</div>
+            </div>
+          </div>
+        </div>
+        
+      {% else %}
+        <!-- Rich content with fewer images -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+          <div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-6">Professional Excellence</h3>
+            <p class="text-gray-600 leading-relaxed mb-6">
+              Every project in our portfolio represents our unwavering commitment to quality, attention to detail, and customer satisfaction. We take pride in transforming spaces and exceeding expectations.
+            </p>
+            
+            <div class="space-y-4">
+              <div class="flex items-center">
+                <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-gray-700">Quality craftsmanship guaranteed</span>
+              </div>
+              <div class="flex items-center">
+                <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-gray-700">Before and after documentation</span>
+              </div>
+              <div class="flex items-center">
+                <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-gray-700">Customer testimonials included</span>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            {% if has_images %}
+              <div class="grid grid-cols-2 gap-4">
+                {% for img in img_urls[:4] %}
+                  <div class="relative rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <img src="{{ img }}" alt="Portfolio {{ loop.index }}" class="w-full h-32 object-cover hover:scale-105 transition-transform duration-300"/>
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-8 text-center">
+                <svg class="w-16 h-16 mx-auto mb-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Portfolio Coming Soon</h3>
+                <p class="text-gray-600">Professional project gallery in development</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+      
+      <!-- CTA for rich gallery -->
+      <div class="text-center bg-gradient-to-r from-blue-900 to-blue-800 rounded-3xl p-12 text-white">
+        <h3 class="text-3xl lg:text-4xl font-bold mb-6">Ready to Start Your Project?</h3>
+        <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+          Join our satisfied customers and let us transform your space with the same attention to detail and professionalism showcased in our portfolio.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="#contact" class="inline-flex items-center px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+            </svg>
+            Get Your Free Quote
+          </a>
+          
+          <a href="#services" class="inline-flex items-center px-8 py-4 bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-900 font-semibold rounded-lg transition-all duration-200">
+            View Our Services
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      
+    {% else %}
+      <!-- STANDARD CONTENT: Balanced gallery layout -->
+      <div class="text-center mb-16">
+        <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+          {{ heading or 'Our Work Gallery' }}
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          {{ short_copy or original_text or 'Take a look at some of our recent projects and see the quality of work we deliver for our valued customers.' }}
+        </p>
+      </div>
+      
+      {% if has_images %}
+        {% if image_count >= 6 %}
+          <!-- Standard grid for multiple images -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {% for img in img_urls[:9] %}
+              <div class="group relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                <img src="{{ img }}" alt="Gallery Image {{ loop.index }}" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"/>
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div class="absolute bottom-4 left-4 right-4 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                  <h3 class="text-lg font-semibold">Project {{ loop.index }}</h3>
+                  <p class="text-sm text-gray-200">Professional service completion</p>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <!-- Flexible layout for fewer images -->
+          <div class="grid grid-cols-1 {% if image_count >= 4 %}md:grid-cols-2{% endif %} {% if image_count >= 3 %}lg:grid-cols-3{% endif %} gap-8 mb-12">
+            {% for img in img_urls %}
+              <div class="relative rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <img src="{{ img }}" alt="Gallery Image {{ loop.index }}" class="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"/>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% else %}
+        <!-- Standard placeholder -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          {% for i in range(3) %}
+            <div class="bg-white rounded-xl p-8 text-center shadow-lg">
+              <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+              </svg>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Project {{ i + 1 }}</h3>
+              <p class="text-gray-600">Professional work showcase</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      
+      <!-- Standard CTA -->
+      <div class="text-center bg-gradient-to-r from-blue-50 to-orange-50 rounded-2xl p-12">
+        <h3 class="text-3xl font-bold text-gray-900 mb-4">Impressed by Our Work?</h3>
+        <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          Let us bring the same level of quality and professionalism to your next project.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="#contact" class="inline-flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+            </svg>
+            Start Your Project
+          </a>
+          
+          <a href="#services" class="inline-flex items-center px-8 py-4 bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold rounded-lg transition-all duration-200">
+            View Services
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>

@@ -1,39 +1,120 @@
-<!-- Enhanced Other/General Content Section -->
-<section class="py-16 bg-white border-b border-gray-100">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<!-- Modern Brand-Aware Other/General Content Section -->
+{% set content_length = (original_text or short_copy or '')|length %}
+{% set has_images = img_urls and img_urls|length > 0 %}
+{% set has_phone = phone_number and phone_number != '#' %}
+{% set is_minimal = content_length < 100 %}
+{% set is_rich = content_length > 300 %}
+
+<!-- Extract brand colors with fallbacks -->
+{% set primary_color = brand_identity.colors.primary or '#3B82F6' %}
+{% set secondary_color = brand_identity.colors.secondary or '#64748B' %}
+{% set accent_color = brand_identity.colors.accent or '#F59E0B' %}
+{% set text_primary = brand_identity.colors.text_primary or '#111827' %}
+{% set background_color = brand_identity.colors.background or '#FFFFFF' %}
+
+<!-- Typography settings -->
+{% set heading_font = typography.heading_font or 'Inter, system-ui, sans-serif' %}
+{% set primary_font = typography.primary_font or 'Inter, system-ui, sans-serif' %}
+
+<style>
+  .other-section {
+    --brand-primary: {{ primary_color }};
+    --brand-secondary: {{ secondary_color }};
+    --brand-accent: {{ accent_color }};
+    --brand-text: {{ text_primary }};
+    --brand-background: {{ background_color }};
+  }
+  
+  .other-card {
+    background: color-mix(in srgb, var(--brand-background) 98%, var(--brand-primary) 2%);
+    border: 1px solid color-mix(in srgb, var(--brand-primary) 15%, transparent 85%);
+    backdrop-filter: blur(10px);
+  }
+  
+  .other-heading {
+    font-family: {{ heading_font }};
+    color: var(--brand-text);
+  }
+  
+  .other-text {
+    font-family: {{ primary_font }};
+    color: color-mix(in srgb, var(--brand-text) 80%, transparent 20%);
+  }
+  
+  .other-cta {
+    background: linear-gradient(135deg, var(--brand-accent), color-mix(in srgb, var(--brand-accent) 85%, #ffffff 15%));
+    box-shadow: 0 8px 25px color-mix(in srgb, var(--brand-accent) 25%, transparent 75%);
+  }
+</style>
+
+<section class="other-section {% if is_minimal %}py-12{% elif is_rich %}py-20{% else %}py-16{% endif %} relative overflow-hidden">
+  <!-- Subtle background -->
+  <div class="absolute inset-0" style="background: linear-gradient(135deg, {{ background_color }} 0%, color-mix(in srgb, {{ primary_color }} 3%, {{ background_color }} 97%) 100%)"></div>
+  
+  <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="{% if has_images %}grid grid-cols-1 lg:grid-cols-2 gap-12 items-center{% else %}max-w-4xl mx-auto text-center{% endif %}">
+      
       <!-- Content Column -->
-      <div class="{% if img_urls %}order-1{% endif %}">
+      <div class="{% if has_images %}order-1{% endif %}">
         {% if heading %}
-          <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+          <h2 class="other-heading {% if is_minimal %}text-2xl lg:text-3xl{% elif is_rich %}text-3xl lg:text-5xl{% else %}text-3xl lg:text-4xl{% endif %} font-bold mb-6 leading-tight">
             {{ heading }}
           </h2>
         {% endif %}
         
-        {% if short_copy or original_text or text %}
-          <div class="prose prose-lg text-gray-600 leading-relaxed">
-            <p>{{ short_copy or original_text or text }}</p>
+        {% if short_copy or original_text %}
+          <div class="other-text {% if is_rich %}text-lg{% else %}text-base{% endif %} leading-relaxed mb-8">
+            {% if short_copy %}
+              <p class="mb-4">{{ short_copy }}</p>
+            {% endif %}
+            {% if original_text and original_text != short_copy %}
+              <p>{{ original_text[:300] }}{% if original_text|length > 300 %}...{% endif %}</p>
+            {% endif %}
           </div>
         {% endif %}
         
-        <!-- Call to Action -->
-        <div class="mt-8">
-          <a href="#contact" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105">
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-            </svg>
-            Learn More
-          </a>
-        </div>
+        <!-- Brand-aware Call to Action -->
+        {% if not has_images or is_rich %}
+          <div class="mt-8 {% if not has_images %}flex justify-center{% endif %}">
+            <a href="#contact" class="other-cta inline-flex items-center px-6 py-3 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+              </svg>
+              Learn More
+            </a>
+            
+            {% if has_phone %}
+              <a href="tel:{{ phone_number }}" class="ml-4 inline-flex items-center px-6 py-3 border-2 text-white font-semibold rounded-xl transition-all duration-300 hover:bg-white hover:text-gray-900"
+                 style="border-color: {{ accent_color }}; color: {{ accent_color }};">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                </svg>
+                Call Now
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
       </div>
       
       <!-- Image Column -->
-      {% if img_urls %}
+      {% if has_images %}
         <div class="order-2">
-          <div class="relative rounded-xl overflow-hidden shadow-xl">
-            <img src="{{ img_urls[0] }}" alt="{{ heading or 'Content Image' }}" class="w-full h-64 lg:h-80 object-cover"/>
-            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+          <div class="other-card rounded-2xl overflow-hidden shadow-xl transition-all duration-500 hover:shadow-2xl">
+            <img src="{{ img_urls[0] }}" alt="{{ heading or 'Content Image' }}" 
+                 class="w-full {% if is_minimal %}h-48{% elif is_rich %}h-80 lg:h-96{% else %}h-64 lg:h-80{% endif %} object-cover"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+            
+            <!-- Additional images if available -->
+            {% if img_urls|length > 1 and is_rich %}
+              <div class="p-6">
+                <div class="grid grid-cols-3 gap-2">
+                  {% for img in img_urls[1:4] %}
+                    <img src="{{ img }}" alt="Additional content" class="w-full h-16 object-cover rounded-lg">
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
           </div>
         </div>
       {% endif %}

@@ -1,0 +1,104 @@
+<!-- Minimal Contact Section -->
+{% set has_phone = phone_number and phone_number != '#' %}
+{% set has_email = email and email != '#' %}
+{% set has_address = address and address != '#' %}
+
+<section class="contact-section py-section-md bg-white">
+  <div class="container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">Get In Touch</h2>
+      <p class="text-xl text-gray-600">
+        Ready to get started? Contact us today.
+      </p>
+    </div>
+    
+    <!-- Contact Options -->
+    <div class="grid grid-cols-1 md:grid-cols-{{ (has_phone|int + has_email|int + has_address|int) }} gap-8">
+      {% if has_phone %}
+        <div class="contact-option text-center p-6 rounded-lg bg-gray-50 hover:bg-blue-50 transition-colors duration-300">
+          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Call Us</h3>
+          <a href="tel:{{ phone_number }}" 
+             class="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-300 touch-target block">
+            {{ phone_number }}
+          </a>
+        </div>
+      {% endif %}
+      
+      {% if has_email %}
+        <div class="contact-option text-center p-6 rounded-lg bg-gray-50 hover:bg-blue-50 transition-colors duration-300">
+          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Email Us</h3>
+          <a href="mailto:{{ email }}" 
+             class="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-300 touch-target block break-all">
+            {{ email }}
+          </a>
+        </div>
+      {% endif %}
+      
+      {% if has_address %}
+        <div class="contact-option text-center p-6 rounded-lg bg-gray-50 hover:bg-blue-50 transition-colors duration-300">
+          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Visit Us</h3>
+          <address class="text-gray-600 not-italic">
+            {{ address }}
+          </address>
+        </div>
+      {% endif %}
+    </div>
+    
+    <!-- Primary CTA -->
+    {% if has_phone %}
+      <div class="text-center mt-12">
+        <a href="tel:{{ phone_number }}" 
+           class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-lg hover:shadow-xl touch-target">
+          <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+          Call Now for Free Quote
+        </a>
+      </div>
+    {% endif %}
+    
+    <!-- Business Hours (if available) -->
+    {% if hours %}
+      <div class="text-center mt-8 p-4 bg-gray-50 rounded-lg">
+        <h4 class="font-semibold text-gray-900 mb-2">Business Hours</h4>
+        <p class="text-gray-600 text-sm">
+          {{ hours }}
+        </p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+@media (max-width: 768px) {
+  .contact-option {
+    margin-bottom: 1rem;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+</style>

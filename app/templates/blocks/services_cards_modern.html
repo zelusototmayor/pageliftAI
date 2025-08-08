@@ -1,0 +1,130 @@
+<!-- Modern Services Cards with Brand Integration -->
+{% set services_list = services or [] %}
+{% set has_services = services_list|length > 0 %}
+{% set primary_color = brand_identity.colors.primary or '#3B82F6' %}
+{% set secondary_color = brand_identity.colors.secondary or '#64748B' %}
+{% set accent_color = brand_identity.colors.accent or '#F59E0B' %}
+
+{% if has_services %}
+<section class="services-section py-section-lg bg-gradient-to-b from-white to-gray-50">
+  <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-sm font-semibold mb-6">
+        <div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+        Our Services
+      </div>
+      <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+        Expert Solutions for Every Need
+      </h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        We provide comprehensive services with the highest standards of quality and professionalism.
+      </p>
+    </div>
+    
+    <!-- Services Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ min(services_list|length, 3) }} gap-8">
+      {% for service in services_list[:6] %}
+        <div class="service-card group bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200">
+          <!-- Service Header -->
+          <div class="flex items-start justify-between mb-6">
+            <!-- Service Icon -->
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+                 style="background: linear-gradient(135deg, {{ primary_color }}15, {{ accent_color }}15);">
+              {% if service.icon %}
+                <i class="{{ service.icon }} text-2xl" style="color: {{ primary_color }};"></i>
+              {% else %}
+                <svg class="w-8 h-8" style="color: {{ primary_color }};" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+              {% endif %}
+            </div>
+            
+            <!-- Price Badge -->
+            {% if service.price %}
+              <div class="px-3 py-1 rounded-full text-sm font-semibold" 
+                   style="background-color: {{ accent_color }}20; color: {{ accent_color }};">
+                {{ service.price }}
+              </div>
+            {% endif %}
+          </div>
+          
+          <!-- Service Content -->
+          <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors duration-300">
+            {{ service.name or service.title or 'Professional Service' }}
+          </h3>
+          
+          <p class="text-gray-600 mb-6 leading-relaxed">
+            {{ service.description or 'Expert service delivered with professionalism, quality, and attention to detail that exceeds expectations.' }}
+          </p>
+          
+          <!-- Service Features -->
+          {% if service.features %}
+            <ul class="space-y-2 mb-6">
+              {% for feature in service.features[:3] %}
+                <li class="flex items-center text-sm text-gray-700">
+                  <svg class="w-4 h-4 mr-2 flex-shrink-0" style="color: {{ accent_color }};" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                  {{ feature }}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          
+          <!-- CTA Button -->
+          {% if phone_number %}
+            <a href="tel:{{ phone_number }}" 
+               class="inline-flex items-center w-full justify-center px-6 py-3 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg touch-target"
+               style="background: linear-gradient(135deg, {{ primary_color }}, {{ accent_color }}); color: white;">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+              </svg>
+              Get Quote
+            </a>
+          {% else %}
+            <button class="inline-flex items-center w-full justify-center px-6 py-3 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+                    style="background: linear-gradient(135deg, {{ primary_color }}, {{ accent_color }}); color: white;">
+              Learn More
+            </button>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    
+    <!-- Bottom CTA Section -->
+    {% if phone_number %}
+      <div class="text-center mt-16 p-8 rounded-2xl"
+           style="background: linear-gradient(135deg, {{ primary_color }}08, {{ accent_color }}08);">
+        <h3 class="text-2xl font-bold text-gray-900 mb-4">
+          Ready to Get Started?
+        </h3>
+        <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
+          Contact us today for a free consultation and personalized quote for your project.
+        </p>
+        <a href="tel:{{ phone_number }}" 
+           class="inline-flex items-center px-8 py-4 font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg touch-target"
+           style="background: linear-gradient(135deg, {{ primary_color }}, {{ accent_color }}); color: white;">
+          <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+          Call Now: {{ phone_number }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+/* Service card hover effects */
+.service-card:hover {
+  transform: translateY(-4px);
+}
+
+@media (max-width: 768px) {
+  .service-card {
+    margin-bottom: 1rem;
+  }
+}
+</style>
+{% endif %}
