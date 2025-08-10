@@ -12,17 +12,47 @@ export default function CreateProjectForm({ onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  function validateUrl(url: string): string | null {
+    if (!url) return "URL is required";
+    
+    try {
+      const urlObj = new URL(url);
+      if (!['http:', 'https:'].includes(urlObj.protocol)) {
+        return "URL must use http:// or https://";
+      }
+      if (!urlObj.hostname) {
+        return "URL must include a valid domain name";
+      }
+      // Basic domain validation
+      if (urlObj.hostname.includes('localhost') || urlObj.hostname.includes('127.0.0.1')) {
+        return "Local URLs are not supported";
+      }
+      return null;
+    } catch {
+      return "Please enter a valid URL (e.g., https://example.com)";
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+    
+    // Validate URL before submission
+    const urlError = validateUrl(url);
+    if (urlError) {
+      setError(urlError);
+      return;
+    }
+    
+    setLoading(true);
     try {
       await createProject({ url, project_name: projectName });
       setUrl("");
       setProjectName("");
       if (onSuccess) onSuccess();
     } catch (err: any) {
-      setError(err?.response?.data?.detail || err.message || "Failed to create project");
+      const errorMessage = err?.response?.data?.detail || err.message || "Failed to create project";
+      setError(`Failed to create project: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -48,8 +78,12 @@ export default function CreateProjectForm({ onSuccess }: Props) {
           className="w-full border rounded px-3 py-2"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://example.com"
           required
         />
+        <div className="text-sm text-gray-500 mt-1">
+          Enter the website URL you want to convert (must start with http:// or https://)
+        </div>
       </div>
       {error && <div className="text-red-600 mb-2">{error}</div>}
       <button

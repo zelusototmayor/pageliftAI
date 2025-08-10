@@ -11,6 +11,12 @@ function StatusBadge({ status }: { status: string }) {
         return 'bg-green-100 text-green-800';
       case 'queued':
         return 'bg-yellow-100 text-yellow-800';
+      case 'scraping':
+        return 'bg-blue-100 text-blue-800';
+      case 'analyzing':
+        return 'bg-purple-100 text-purple-800';
+      case 'rendering':
+        return 'bg-indigo-100 text-indigo-800';
       case 'processing':
         return 'bg-blue-100 text-blue-800';
       case 'failed':
@@ -28,6 +34,12 @@ function StatusBadge({ status }: { status: string }) {
         return 'Complete';
       case 'queued':
         return 'Queued';
+      case 'scraping':
+        return 'Scraping Website';
+      case 'analyzing':
+        return 'Analyzing Content';
+      case 'rendering':
+        return 'Generating Site';
       case 'processing':
         return 'Processing';
       case 'failed':
@@ -106,11 +118,39 @@ export default function DashboardPage() {
                     </td>
                     <td className="py-3">
                       <div className="flex flex-col gap-1">
-                        <StatusBadge status={project.status || 'unknown'} />
+                        <div className="flex items-center gap-2">
+                          <StatusBadge status={project.status || 'unknown'} />
+                          {['queued', 'scraping', 'analyzing', 'rendering', 'processing'].includes(project.status || '') && (
+                            <svg className="w-4 h-4 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                          )}
+                        </div>
                         {project.error && (
-                          <div className="text-xs text-red-600 max-w-xs truncate" title={project.error}>
-                            Error: {project.error}
-                          </div>
+                          <details className="cursor-pointer">
+                            <summary className="text-xs text-red-600 hover:text-red-800">
+                              ⚠️ Error Details
+                            </summary>
+                            <div className="text-xs text-red-600 mt-1 p-2 bg-red-50 rounded border-l-2 border-red-200 max-w-sm">
+                              {project.error.includes('Name or service not known') ? (
+                                <>
+                                  <div className="font-medium">Website not accessible</div>
+                                  <div>The website URL couldn't be reached. Please check the URL and try again.</div>
+                                </>
+                              ) : project.error.includes('timeout') || project.error.includes('Timeout') ? (
+                                <>
+                                  <div className="font-medium">Request timeout</div>
+                                  <div>The website took too long to respond. Please try again or use a different URL.</div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="font-medium">Processing error</div>
+                                  <div className="break-all">{project.error}</div>
+                                </>
+                              )}
+                            </div>
+                          </details>
                         )}
                       </div>
                     </td>
