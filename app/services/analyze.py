@@ -40,69 +40,69 @@ class SectionAnalysis:
 OPENAI_MODEL = settings.OPENAI_MODEL
 
 PROMPT_TEMPLATE = """
-You are an expert web content analyzer that understands the intent and purpose behind different website sections.
+You are an expert web content analyzer specializing in business website categorization. Your task is to classify website sections based on their primary business intent and purpose.
 
-For each section, analyze its semantic intent and classify it based on what the content is trying to achieve:
+**ANALYSIS METHODOLOGY:**
+1. Identify the PRIMARY purpose of each section
+2. Look for business intent signals (CTAs, contact info, value propositions)
+3. Consider section positioning and content hierarchy
+4. Classify with high confidence when signals are clear
+5. Use reasoning to explain your decision process
 
-**CLASSIFICATION RULES:**
+**CLASSIFICATION CATEGORIES:**
 
-**HERO** - Primary value proposition and main call to action
-- Contains company/service name prominently
-- Describes main offering or value proposition
-- Has primary call-to-action (CTA)
-- Usually the first/most prominent section
-- Intent: "What do we do?" or "Why choose us?"
+🎯 **HERO** - Primary business introduction and value proposition
+SIGNALS: Company/brand name, main service offering, primary CTA, "welcome" language
+POSITION: Usually first section, above-the-fold content
+CONTENT: Value proposition, key benefits, main call-to-action
+EXAMPLES: "Welcome to [Company]", "Leading [Service] Provider", "#1 in [Industry]"
 
-**ABOUT** - Company background, story, credentials, team
-- Describes company history, mission, values
-- Mentions experience, expertise, qualifications
-- Contains "about us", "who we are", "our story" language
-- Intent: "Who are we?" or "Why trust us?"
+👥 **ABOUT** - Company credentials and trust-building information  
+SIGNALS: Company history, team info, experience years, credentials, "about us" language
+CONTENT: Background story, qualifications, experience, mission/vision, team details
+EXAMPLES: "Founded in", "Years of experience", "Our team", "About our company"
 
-**SERVICES** - Specific offerings, products, solutions
-- Lists specific services or products offered
-- Describes what customer can buy/get
-- Contains pricing, packages, or service details
-- Intent: "What can you buy from us?"
+🛠️ **SERVICES** - Specific business offerings and solutions
+SIGNALS: Service lists, product details, "we offer", pricing, packages, process descriptions
+CONTENT: What customers can buy/hire, specific services, solutions, pricing information
+EXAMPLES: "Our services include", "We specialize in", "Service packages", "What we do"
 
-**CONTACT** - How to reach the business
-- Contains contact information (phone, email, address)
-- Has contact forms or location details
-- Business hours, directions, contact methods
-- Intent: "How to reach us?"
+📞 **CONTACT** - Communication and location information
+SIGNALS: Phone numbers, emails, addresses, contact forms, "get in touch", business hours
+CONTENT: How to reach the business, location, hours, contact methods
+EXAMPLES: "Call us", "Contact information", "Get in touch", "Visit our office"
 
-**GALLERY** - Visual showcases, portfolios, testimonials
-- Contains multiple images or visual content
-- Showcases work examples, before/after, projects
-- Customer testimonials or reviews
-- Intent: "Proof of our work" or "What others say"
+🖼️ **GALLERY** - Social proof and work showcases
+SIGNALS: Multiple images, testimonials, reviews, portfolio pieces, "our work"
+CONTENT: Before/after photos, customer reviews, project examples, testimonials
+EXAMPLES: "Our work", "Customer testimonials", "Project gallery", "What clients say"
 
-**OTHER** - Content that doesn't fit above categories
-- General information, policies, blog content
-- Navigation elements, footers with mixed content
-- Use this only when content doesn't clearly fit other categories
+📄 **OTHER** - Secondary or administrative content
+SIGNALS: Policies, legal text, navigation, mixed content that doesn't fit above
+CONTENT: Privacy policies, terms, general info, footer content
+USE: Only when content doesn't clearly fit the main business categories
 
-**ANALYSIS APPROACH:**
-1. Look for intent keywords and semantic patterns
-2. Consider section position and context clues
-3. Analyze business data (phones, CTAs, forms) to inform classification
-4. When unsure between categories, choose the most specific one
-5. Preserve all original content while improving clarity
+**ENHANCED ANALYSIS RULES:**
+- Business data presence (phones, emails, CTAs) heavily influences categorization
+- Position matters: first section often HERO, last section often CONTACT
+- Content length and depth indicate category (services = detailed, hero = concise)
+- Multi-language content (English/Portuguese/Spanish) should be handled appropriately
+- When confidence < 0.6, provide detailed reasoning for the classification decision
 
-Respond in JSON format:
+**RESPONSE FORMAT:**
 ```json
 [
   {{
     "section_id": number,
-    "category": "hero|about|services|contact|gallery|other",
-    "confidence": number (0.0-1.0),
-    "short_copy": "improved version of content (150-300 chars)",
-    "reasoning": "brief explanation of classification decision"
+    "category": "hero|about|services|contact|gallery|other", 
+    "confidence": number (0.0-1.0, be precise),
+    "short_copy": "professionally rewritten content (150-300 chars, maintain key info)",
+    "reasoning": "detailed explanation of why this category was chosen, include key signals observed"
   }}
 ]
 ```
 
-Sections to analyze:
+**SECTIONS TO ANALYZE:**
 {sections_json}
 """
 
@@ -331,11 +331,18 @@ def analyze_sections(sections: List[Dict[str, Any]]) -> List[SectionAnalysis]:
     return analyses
 
 def determine_fallback_category(section: Dict[str, Any]) -> str:
-    """Smart fallback classification with multi-language support"""
+    """Enhanced smart fallback classification with multi-language support and contextual analysis"""
     text = str(section.get("text") or "").lower()
     heading = str(section.get("heading") or "").lower()
     business_data = section.get("business_data", {})
-    combined_text = text + " " + heading
+    section_classes = " ".join(section.get("classes", [])).lower()
+    section_id = str(section.get("id", "")).lower()
+    combined_text = text + " " + heading + " " + section_classes + " " + section_id
+    
+    # Pre-calculate common variables
+    text_length = len(text)
+    image_count = len(section.get("img_urls", []))
+    section_position = section.get("section_id", 999)
     
     # Multi-language keyword sets
     contact_keywords = {
@@ -399,43 +406,106 @@ def determine_fallback_category(section: Dict[str, Any]) -> str:
         matches = sum(1 for keyword in keyword_set if keyword in combined_text)
         return matches >= minimum_matches
     
-    # Priority-based classification
+    # Enhanced priority-based classification with CSS class hints
     
-    # 1. Contact (highest priority - business critical)
-    if (business_data.get("phones") or business_data.get("emails") or 
-        has_keywords(contact_keywords, minimum_matches=1)):
+    # First check CSS classes and IDs for strong hints
+    class_id_hints = {
+        "hero": ["hero", "banner", "main", "intro", "welcome", "landing"],
+        "about": ["about", "company", "team", "story", "info"],
+        "services": ["service", "product", "offer", "solution", "work"],
+        "contact": ["contact", "touch", "reach", "footer"],
+        "gallery": ["gallery", "portfolio", "showcase", "testimonial", "review"]
+    }
+    
+    # POSITION-FIRST LOGIC: Early sections (0-1) get hero priority regardless of other keywords
+    if (section.get("section_id", 0) <= 1 and 
+        (has_keywords(hero_keywords, minimum_matches=1) or 
+         any(word in combined_text for word in ["hero", "banner", "main", "intro", "welcome"]))):
+        return "hero"
+    
+    # Check for legal/policy content EARLY (override other classifications)
+    if any(word in combined_text for word in ["policy", "legal", "privacy", "terms", "cookie", "gdpr", "disclaimer"]):
+        return "other"
+    
+    # Contact class hints (highest priority - but exclude footer-only contexts)
+    if any(hint in combined_text for hint in class_id_hints["contact"]):
+        # Require actual contact indicators, not just footer placement
+        if business_data.get("phones") or business_data.get("emails") or has_keywords(contact_keywords):
+            return "contact"
+    
+    # Gallery class hints (high priority - visual content is distinct)
+    if any(hint in combined_text for hint in class_id_hints["gallery"]):
+        if image_count >= 1 or has_keywords(gallery_keywords):
+            return "gallery"
+    
+    # About class hints (medium priority - check for about keywords including Portuguese)
+    if any(hint in combined_text for hint in class_id_hints["about"]) or "sobre" in combined_text:
+        if text_length > 30 or has_keywords(about_keywords, minimum_matches=1):
+            return "about"
+    
+    # Services class hints (lower priority - can conflict with hero)
+    if any(hint in combined_text for hint in class_id_hints["services"]):
+        if section_position > 1 and (text_length > 20 or has_keywords(services_keywords, minimum_matches=2)):
+            return "services"
+    
+    # Content-based classification with position consideration
+    
+    # 1. Hero FIRST - position 0-1 sections take precedence over keyword matches
+    if (section.get("section_id", 0) <= 1 and 
+        (has_keywords(hero_keywords, minimum_matches=1) or 
+         any(word in combined_text for word in ["hero", "banner", "main"]))):
+        return "hero"
+    
+    # 2. Contact (strong business data signals)
+    if (business_data.get("phones") and business_data.get("emails")) or has_keywords(contact_keywords, minimum_matches=2):
         return "contact"
     
-    # 2. Services (high priority - revenue generating)
-    if has_keywords(services_keywords, minimum_matches=1):
-        return "services"
-    
-    # 3. About (medium priority - trust building)
+    # 3. Gallery (multiple images or gallery-specific keywords)
+    if (len(section.get("img_urls", [])) > 1 or has_keywords(gallery_keywords, minimum_matches=1)):
+        return "gallery"
+        
+    # 4. About (about-specific keywords - prioritize over services)
     if has_keywords(about_keywords, minimum_matches=1):
         return "about"
+        
+    # 5. Services (service-specific keywords - most restrictive, comes after about)
+    if has_keywords(services_keywords, minimum_matches=3):
+        return "services"
     
-    # 4. Hero (check for first section with value proposition keywords)
-    if (section.get("section_id", 0) == 0 or 
-        (has_keywords(hero_keywords, minimum_matches=1) and len(text) > 50)):
+    # 6. Weak contact signals (single contact info, but exclude legal/policy content)
+    if ((business_data.get("phones") or business_data.get("emails")) and 
+        not any(word in combined_text for word in ["policy", "legal", "privacy", "terms", "cookie", "gdpr"])):
+        return "contact"
+    
+    # 7. Final contextual rules based on position and content characteristics
+    
+    # First section fallback -> hero
+    if section_position <= 1 and text_length > 20:
         return "hero"
     
-    # 5. Gallery (testimonials, work examples)
-    if has_keywords(gallery_keywords, minimum_matches=1):
+    # Multiple images -> gallery
+    if image_count > 1:
         return "gallery"
-    
-    # 6. Additional context-based rules
-    
-    # If section has images and descriptive text, likely gallery
-    if len(section.get("img_urls", [])) > 1 and len(text) > 30:
-        return "gallery"
-    
-    # If first section and has business data, likely hero
-    if section.get("section_id", 0) == 0 and (business_data.get("ctas") or business_data.get("phones")):
-        return "hero"
-    
-    # If section has long text without specific keywords, likely about
-    if len(text) > 100 and not has_keywords(services_keywords):
+        
+    # Long text without specific keywords -> about
+    if text_length > 150 and not any(word in combined_text for word in ["policy", "legal", "privacy", "terms"]):
         return "about"
+        
+    # Medium text with business language -> services  
+    if text_length > 50 and any(word in combined_text for word in ["we", "our", "provide", "offer", "do"]) and not any(word in combined_text for word in ["policy", "legal"]):
+        return "services"
+    
+    # Legal/policy content -> other
+    if any(word in combined_text for word in ["policy", "legal", "privacy", "terms", "cookie", "gdpr", "disclaimer"]):
+        return "other"
+    
+    # Late position sections with contact info -> contact
+    if section_position > 4 and (business_data.get("phones") or business_data.get("emails")):
+        return "contact"
+    
+    # Default based on text length
+    if text_length > 20:
+        return "about"  # Descriptive content defaults to about
     
     return "other"
 
