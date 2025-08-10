@@ -97,7 +97,7 @@
   {% endif %}
 </style>
 
-<section class="services-section relative {% if is_minimal %}py-16{% elif is_rich %}py-32{% else %}py-24{% endif %} overflow-hidden">
+<section class="services-section relative {% if is_minimal %}py-6{% elif is_rich %}py-12{% else %}py-10{% endif %} overflow-hidden">
   <!-- Dynamic background with subtle pattern -->
   <div class="absolute inset-0" style="background: linear-gradient(135deg, {{ background_color }} 0%, color-mix(in srgb, {{ primary_color }} 5%, {{ background_color }} 95%) 100%)"></div>
   
@@ -131,7 +131,7 @@
         </span>
       </div>
       
-      <h2 class="section-header {% if is_minimal %}text-3xl lg:text-4xl{% elif is_rich %}text-4xl lg:text-6xl{% else %}text-4xl lg:text-5xl{% endif %} font-bold leading-tight mb-6">
+      <h2 class="section-header {% if is_minimal %}text-3xl lg:text-4xl{% elif is_rich %}text-4xl lg:text-6xl{% else %}text-4xl lg:text-5xl{% endif %} font-bold leading-tight mb-6 text-center">
         {{ heading or 'Our Professional Services' }}
       </h2>
       
@@ -159,7 +159,7 @@
                    class="w-full h-full object-cover"/>
               <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
-            <h3 class="service-title text-2xl font-bold mb-4">Professional Service</h3>
+            <h3 class="service-title text-2xl font-bold mb-4 text-center">Professional Service</h3>
             <p class="service-description mb-6">{{ short_copy or original_text or 'Expert solutions for your needs' }}</p>
             
             <a href="#contact" class="cta-primary inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
@@ -171,13 +171,13 @@
           </div>
         {% else %}
           <div class="service-card text-center rounded-3xl p-8 shadow-2xl">
-            <div class="service-icon w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-6">
+            <div class="service-icon w-14 h-14 mx-auto rounded-2xl flex items-center justify-center mb-6">
               <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
                 <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
               </svg>
             </div>
-            <h3 class="service-title text-xl font-bold mb-3">Expert Service</h3>
+            <h3 class="service-title text-xl font-bold mb-3 text-center">Expert Service</h3>
             <p class="service-description mb-6">{{ short_copy or original_text or 'Professional solutions you can trust' }}</p>
             
             <a href="#contact" class="cta-primary inline-flex items-center px-8 py-4 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105">
@@ -190,9 +190,9 @@
     {% elif is_rich %}
       <!-- RICH CONTENT: Advanced grid with extensive information -->
       {% if has_images and image_count >= 3 %}
-        <!-- Image-rich modern layout -->
+        <!-- LIMITED Image-rich layout (max 3 to prevent infinite cards) -->
         <div class="grid-responsive-3 gap-8 mb-16">
-          {% for image in image_set.all_images[:9] %}
+          {% for image in image_set.all_images[:3] %}
             <div class="group service-card rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
               <div class="relative overflow-hidden">
                 <img src="{{ image.url }}" 
@@ -220,7 +220,7 @@
               </div>
               
               <div class="p-6">
-                <h3 class="service-title text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors duration-300">
+                <h3 class="service-title text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors duration-300 text-center">
                   Professional Service {{ loop.index }}
                 </h3>
                 <p class="service-description mb-4 leading-relaxed">
@@ -259,64 +259,27 @@
           {% endfor %}
         </div>
       {% else %}
-        <!-- Rich content with industry-specific service categories -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          {% if industry == 'plumbing' %}
-            {% set rich_services = [
-              {'icon': 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547A8.014 8.014 0 004 21h4.286a1 1 0 00.98-.804l1.58-7.11a1 1 0 01.98-.804h.673a1 1 0 01.98.804l1.58 7.11A1 1 0 0015.714 21H20a8.014 8.014 0 00-.572-5.572z', 'title': 'Emergency Plumbing', 'desc': 'Available 24/7 for burst pipes, water heater failures, and urgent plumbing emergencies.', 'features': ['24/7 Emergency Service', 'Licensed Plumbers', 'Advanced Equipment', 'Rapid Response']},
-              {'icon': 'M13 10V3L4 14h7v7l9-11h-7z', 'title': 'Water Heater Services', 'desc': 'Complete water heater installation, repair, and maintenance for all makes and models.', 'features': ['Installation & Repair', 'Energy Efficient Options', 'Maintenance Plans', 'Warranty Coverage']},
-              {'icon': 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707', 'title': 'Pipe Installation', 'desc': 'Professional pipe installation and replacement using modern materials and techniques.', 'features': ['Modern Materials', 'Leak Detection', 'Pressure Testing', 'Code Compliant']},
-              {'icon': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'title': 'Drain Cleaning', 'desc': 'Professional drain cleaning and sewer line services to keep your plumbing flowing smoothly.', 'features': ['Hydro Jetting', 'Camera Inspection', 'Root Removal', 'Preventive Maintenance']}
-            ] %}
-          {% elif industry == 'restaurant' %}
-            {% set rich_services = [
-              {'icon': 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', 'title': 'Fine Dining Experience', 'desc': 'Exceptional culinary artistry with fresh, locally sourced ingredients and impeccable presentation.', 'features': ['Farm-to-Table', 'Expert Chefs', 'Wine Pairings', 'Private Events']},
-              {'icon': 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1', 'title': 'Catering Services', 'desc': 'Full-service catering for corporate events, weddings, and special occasions with customized menus.', 'features': ['Event Planning', 'Custom Menus', 'Professional Service', 'Dietary Accommodations']},
-              {'icon': 'M13 10V3L4 14h7v7l9-11h-7z', 'title': 'Takeout & Delivery', 'desc': 'Fast, reliable takeout and delivery service bringing restaurant quality food to your doorstep.', 'features': ['Online Ordering', 'Quick Delivery', 'Fresh Packaging', 'Contactless Options']},
-              {'icon': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'title': 'Private Dining', 'desc': 'Intimate private dining rooms and personalized service for special occasions and business meetings.', 'features': ['Private Rooms', 'Custom Menus', 'Dedicated Service', 'AV Equipment']}
-            ] %}
-          {% else %}
-            {% set rich_services = [
-              {'icon': 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547A8.014 8.014 0 004 21h4.286a1 1 0 00.98-.804l1.58-7.11a1 1 0 01.98-.804h.673a1 1 0 01.98.804l1.58 7.11A1 1 0 0015.714 21H20a8.014 8.014 0 00-.572-5.572z', 'title': 'Emergency Services', 'desc': 'Round-the-clock emergency response for urgent situations requiring immediate professional attention.', 'features': ['24/7 Availability', 'Rapid Response', 'Emergency Equipment', 'Expert Technicians']},
-              {'icon': 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z', 'title': 'Maintenance & Repairs', 'desc': 'Comprehensive maintenance programs and repair services to keep your systems operating at peak performance.', 'features': ['Preventive Maintenance', 'Quality Repairs', 'System Optimization', 'Performance Monitoring']},
-              {'icon': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'title': 'Installation & Setup', 'desc': 'Professional installation services with comprehensive setup, testing, and warranty coverage for your peace of mind.', 'features': ['Expert Installation', 'System Testing', 'Warranty Coverage', 'Follow-up Support']},
-              {'icon': 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1', 'title': 'Consultation & Planning', 'desc': 'Expert consultation services to help you plan, budget, and execute your projects with confidence and clarity.', 'features': ['Free Consultation', 'Project Planning', 'Budget Analysis', 'Implementation Strategy']}
-            ] %}
-          {% endif %}
-          
-          {% for service in rich_services %}
-            <div class="group service-card rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2">
-              <div class="flex items-start mb-6">
-                <div class="service-icon flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="{{ service.icon }}" clip-rule="evenodd"/>
-                  </svg>
-                </div>
-                <div class="ml-6">
-                  <h3 class="service-title text-2xl font-bold mb-2 group-hover:text-blue-600 transition-colors duration-300">{{ service.title }}</h3>
-                </div>
-              </div>
-              
-              <p class="service-description leading-relaxed mb-6">{{ service.desc }}</p>
-              
-              <div class="grid grid-cols-2 gap-3 mb-6">
-                {% for feature in service.features %}
-                  <div class="flex items-center text-sm">
-                    <div class="w-2 h-2 rounded-full mr-3 flex-shrink-0" style="background: {{ accent_color }}"></div>
-                    <span class="service-description">{{ feature }}</span>
-                  </div>
-                {% endfor %}
-              </div>
-              
-              <a href="#contact" class="inline-flex items-center font-semibold transition-all duration-300 group-hover:translate-x-2"
-                 style="color: {{ primary_color }}">
-                Learn More & Get Quote
-                <svg class="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-              </a>
+        <!-- Use original website content instead of hardcoded placeholders -->
+        <div class="text-center max-w-4xl mx-auto">
+          <!-- Single service card using actual website content -->
+          <div class="service-card rounded-3xl p-8 shadow-2xl mx-auto max-w-2xl">
+            <div class="service-icon w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg mx-auto mb-6">
+              <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
+              </svg>
             </div>
-          {% endfor %}
+            
+            <h3 class="service-title text-2xl font-bold mb-4 text-center">{{ heading or 'Professional Services' }}</h3>
+            <p class="service-description leading-relaxed mb-6 text-center">{{ short_copy or original_text or 'Expert solutions tailored to your specific needs with professional quality and guaranteed satisfaction.' }}</p>
+            
+            <a href="#contact" class="inline-flex items-center font-semibold transition-all duration-300 hover:translate-x-1" style="color: {{ primary_color }}">
+              Learn More & Get Quote
+              <svg class="w-5 h-5 ml-2 transition-transform duration-300 hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
         </div>
       {% endif %}
       
@@ -337,7 +300,7 @@
         </div>
         
         <div class="relative">
-          <h3 class="text-3xl lg:text-4xl font-bold mb-6 text-white">Ready to Experience Excellence?</h3>
+          <h3 class="text-3xl lg:text-4xl font-bold mb-6 text-white text-center">Ready to Experience Excellence?</h3>
           <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
             {{ short_copy or 'Our comprehensive services are designed to exceed your expectations with professional excellence and guaranteed satisfaction.' }}
           </p>
@@ -396,7 +359,7 @@
       <!-- STANDARD CONTENT: Modern balanced layout -->
       <div class="grid-responsive-3 gap-8 mb-16">
         {% if has_images and image_count >= 3 %}
-          {% for image in image_set.all_images[:6] %}
+          {% for image in image_set.all_images[:3] %}
             <div class="group service-card rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
               <div class="relative overflow-hidden">
                 <img src="{{ image.url }}" 
@@ -413,7 +376,7 @@
               </div>
               
               <div class="p-6">
-                <h3 class="service-title text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors duration-300">
+                <h3 class="service-title text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors duration-300 text-center">
                   Service {{ loop.index }}
                 </h3>
                 <p class="service-description mb-4 leading-relaxed">
@@ -431,50 +394,42 @@
             </div>
           {% endfor %}
         {% else %}
-          <!-- Standard service cards with icons -->
-          {% set standard_services = [
-            {'icon': 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547A8.014 8.014 0 004 21h4.286a1 1 0 00.98-.804l1.58-7.11a1 1 0 01.98-.804h.673a1 1 0 01.98.804l1.58 7.11A1 1 0 0015.714 21H20a8.014 8.014 0 00-.572-5.572z', 'title': 'Emergency Service', 'desc': '24/7 emergency service for urgent repairs and maintenance needs'},
-            {'icon': 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z', 'title': 'Maintenance', 'desc': 'Regular maintenance services to keep your systems running smoothly'},
-            {'icon': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'title': 'Installation', 'desc': 'Professional installation services with warranty and quality guarantee'},
-            {'icon': 'M13 10V3L4 14h7v7l9-11h-7z', 'title': 'Quick Response', 'desc': 'Fast response times and efficient service to minimize downtime'},
-            {'icon': 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1', 'title': 'Fair Pricing', 'desc': 'Competitive rates with transparent pricing and no hidden fees'},
-            {'icon': 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'title': 'Guaranteed Work', 'desc': 'Your satisfaction is our priority with quality workmanship guarantee'}
-          ] %}
-          
-          {% for service in standard_services %}
-            <div class="group service-card rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
-              <div class="service-icon flex items-center justify-center w-16 h-16 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+          <!-- Single service using original website content -->
+          <div class="text-center max-w-2xl mx-auto">
+            <div class="service-card rounded-3xl p-8 shadow-xl">
+              <div class="service-icon flex items-center justify-center w-16 h-16 rounded-2xl mb-6 mx-auto shadow-lg">
                 <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="{{ service.icon }}" clip-rule="evenodd"/>
+                  <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                  <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
                 </svg>
               </div>
               
-              <h3 class="service-title text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors duration-300">
-                {{ service.title }}
+              <h3 class="service-title text-xl font-semibold mb-3 text-center">
+                {{ heading or 'Professional Services' }}
               </h3>
               
-              <p class="service-description leading-relaxed mb-4">
-                {{ service.desc }}
+              <p class="service-description leading-relaxed mb-4 text-center">
+                {{ short_copy or original_text or 'Expert solutions tailored to your needs with professional quality and guaranteed satisfaction.' }}
               </p>
               
-              <a href="#contact" class="inline-flex items-center font-semibold transition-all duration-300 group-hover:translate-x-1"
+              <a href="#contact" class="inline-flex items-center font-semibold transition-all duration-300 hover:translate-x-1"
                  style="color: {{ primary_color }}">
                 Get Started
-                <svg class="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 ml-2 transition-transform duration-300 hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
               </a>
             </div>
-          {% endfor %}
+          </div>
         {% endif %}
       </div>
       
       <!-- Standard modern CTA -->
       <div class="service-card text-center rounded-3xl p-12 shadow-2xl">
-        <h3 class="service-title text-3xl font-bold mb-4">
+        <h3 class="service-title text-3xl font-bold mb-4 text-center">
           Ready to Get Started? We're Here to Help!
         </h3>
-        <p class="service-description text-xl mb-8 max-w-2xl mx-auto">
+        <p class="service-description text-xl mb-8 max-w-2xl mx-auto text-center break-words overflow-hidden">
           Get a free consultation and quote for your project. Our expert team is ready to provide the solutions you need.
         </p>
         

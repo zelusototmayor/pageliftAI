@@ -105,7 +105,7 @@
   {% endif %}
 </style>
 
-<section id="contact" class="contact-section relative {% if is_minimal %}py-16{% elif is_rich %}py-32{% else %}py-24{% endif %} overflow-hidden">
+<section id="contact" class="contact-section relative {% if is_minimal %}py-6{% elif is_rich %}py-12{% else %}py-8{% endif %} overflow-hidden">
   <!-- Dynamic background -->
   <div class="absolute inset-0" style="background: var(--contact-gradient)"></div>
   
@@ -143,7 +143,7 @@
           </span>
         </div>
         
-        <h2 class="contact-header text-3xl lg:text-4xl font-bold mb-6">
+        <h2 class="contact-header text-3xl lg:text-4xl font-bold mb-6 text-center">
           {{ heading or 'Get In Touch' }}
         </h2>
         
@@ -217,7 +217,7 @@
             <div class="w-4 h-4 rounded-full ml-4 animate-pulse" style="background: {{ primary_color }}"></div>
           </div>
           
-          <h2 class="contact-header text-4xl lg:text-6xl font-bold mb-6">
+          <h2 class="contact-header text-4xl lg:text-6xl font-bold mb-6 text-center">
             {{ heading or 'Get In Touch Today' }}
           </h2>
           
@@ -252,7 +252,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <!-- Enhanced Contact Methods -->
           <div class="space-y-8">
-            <h3 class="text-2xl font-bold text-white mb-6" style="font-family: {{ heading_font }}">Multiple Ways to Reach Us</h3>
+            <h3 class="text-2xl font-bold text-white mb-6 text-center" style="font-family: {{ heading_font }}">Multiple Ways to Reach Us</h3>
             
             {% if has_phone %}
               <div class="contact-card rounded-3xl p-8 transition-all duration-500 hover:shadow-2xl group">
@@ -416,7 +416,7 @@
           
           <!-- Enhanced Contact Form -->
           <div class="contact-card rounded-3xl p-8 transition-all duration-500 hover:shadow-2xl">
-            <h3 class="text-2xl font-bold mb-6 text-white" style="font-family: {{ heading_font }}">Send Us a Message</h3>
+            <h3 class="text-2xl font-bold mb-6 text-white text-center" style="font-family: {{ heading_font }}">Send Us a Message</h3>
             
             <form class="space-y-6">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -493,7 +493,7 @@
         
         <!-- Enhanced Trust Indicators -->
         <div class="contact-card text-center rounded-3xl p-12 transition-all duration-500">
-          <h3 class="text-2xl font-bold mb-8 text-white" style="font-family: {{ heading_font }}">Why Choose Us?</h3>
+          <h3 class="text-2xl font-bold mb-8 text-white text-center" style="font-family: {{ heading_font }}">Why Choose Us?</h3>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div class="text-center group">
               <div class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300"
@@ -544,7 +544,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
         <!-- Contact Information with modern styling -->
         <div>
-          <h2 class="contact-header text-4xl lg:text-5xl font-bold mb-6">
+          <h2 class="contact-header text-4xl lg:text-5xl font-bold mb-6 text-center">
             {{ heading or 'Get In Touch' }}
           </h2>
           
@@ -620,7 +620,7 @@
         
         <!-- Enhanced Contact Form -->
         <div class="contact-card rounded-3xl p-8 transition-all duration-500 hover:shadow-2xl">
-          <h3 class="text-2xl font-bold mb-6 text-white" style="font-family: {{ heading_font }}">Send Message</h3>
+          <h3 class="text-2xl font-bold mb-6 text-white text-center" style="font-family: {{ heading_font }}">Send Message</h3>
           
           <form class="space-y-6">
             <div>

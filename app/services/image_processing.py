@@ -534,10 +534,10 @@ class ImageProcessor:
         if image.format == 'webp':
             return f'''<picture>
                 <source srcset="{image.url}" type="image/webp">
-                <img {' '.join(attributes)}>
+                <img {" ".join(attributes)}>
             </picture>'''
         else:
-            return f'<img {' '.join(attributes)}>'
+            return f'<img {" ".join(attributes)}>'
 
 def process_section_images(section_data: Dict[str, Any], brand_identity: Dict[str, Any]) -> ImageSet:
     """Convenience function to process section images"""

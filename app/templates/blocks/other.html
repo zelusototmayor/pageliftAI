@@ -5,6 +5,10 @@
 {% set is_minimal = content_length < 100 %}
 {% set is_rich = content_length > 300 %}
 
+<!-- Proportional sizing based on content -->
+{% set section_padding = sizing.section_padding if sizing else ('py-6' if is_minimal else 'py-8') %}
+{% set container_spacing = sizing.container_spacing if sizing else 'space-y-6' %}
+
 <!-- Extract brand colors with fallbacks -->
 {% set primary_color = brand_identity.colors.primary or '#3B82F6' %}
 {% set secondary_color = brand_identity.colors.secondary or '#64748B' %}
@@ -47,7 +51,7 @@
   }
 </style>
 
-<section class="other-section {% if is_minimal %}py-12{% elif is_rich %}py-20{% else %}py-16{% endif %} relative overflow-hidden">
+<section class="other-section {{ section_padding }} relative overflow-hidden">
   <!-- Subtle background -->
   <div class="absolute inset-0" style="background: linear-gradient(135deg, {{ background_color }} 0%, color-mix(in srgb, {{ primary_color }} 3%, {{ background_color }} 97%) 100%)"></div>
   

@@ -18,6 +18,24 @@ class SectionAnalysis:
     img_urls: List[str] = None
     classes: List[str] = None
     id: str = None
+    # Enhanced fields for template rendering
+    business_data: Dict[str, Any] = None
+    confidence: float = 0.5
+    reasoning: str = ""
+    is_hybrid: bool = False
+    hybrid_categories: List[str] = None
+    phone_number: str = "#"
+    email: str = "#"
+    
+    def __post_init__(self):
+        if self.img_urls is None:
+            self.img_urls = []
+        if self.classes is None:
+            self.classes = []
+        if self.business_data is None:
+            self.business_data = {}
+        if self.hybrid_categories is None:
+            self.hybrid_categories = []
 
 OPENAI_MODEL = settings.OPENAI_MODEL
 
@@ -266,7 +284,12 @@ def analyze_sections(sections: List[Dict[str, Any]]) -> List[SectionAnalysis]:
         sid = item["section_id"]
         orig = by_id.get(sid, {})
         
-        # Create enhanced SectionAnalysis with confidence and reasoning
+        # Extract business data from original section
+        business_data = orig.get("business_data", {})
+        phones = business_data.get("phones", [])
+        emails = business_data.get("emails", [])
+        
+        # Create enhanced SectionAnalysis with all required fields
         analysis = SectionAnalysis(
             section_id=sid,
             category=item.get("category", "other"),
@@ -276,11 +299,15 @@ def analyze_sections(sections: List[Dict[str, Any]]) -> List[SectionAnalysis]:
             img_urls=orig.get("img_urls", []),
             classes=orig.get("classes", []),
             id=orig.get("id"),
+            # Enhanced fields
+            business_data=business_data,
+            confidence=item.get("confidence", 0.5),
+            reasoning=item.get("reasoning", ""),
+            is_hybrid=item.get("is_hybrid", False),
+            hybrid_categories=item.get("hybrid_categories", []),
+            phone_number=phones[0] if phones else "#",
+            email=emails[0] if emails else "#"
         )
-        
-        # Add new fields for enhanced analysis
-        analysis.confidence = item.get("confidence", 0.5)
-        analysis.reasoning = item.get("reasoning", "")
         
         analyses.append(analysis)
     
@@ -736,6 +763,49 @@ def apply_contextual_improvements(analyses: List[SectionAnalysis]) -> List[Secti
     
     # Apply confidence adjustments and hybrid detection first
     analyses = apply_confidence_adjustments(analyses)
+    
+    # CRITICAL FIX: Ensure only ONE hero section per site
+    hero_sections = [(i, analysis) for i, analysis in enumerate(analyses) if analysis.category == "hero"]
+    if len(hero_sections) > 1:
+        print(f"⚠️  Found {len(hero_sections)} hero sections - limiting to one")
+        
+        # Find the best hero section (prefer first section with highest confidence)
+        best_hero_idx = 0
+        best_hero_score = -1
+        
+        for i, (idx, analysis) in enumerate(hero_sections):
+            confidence = getattr(analysis, 'confidence', 0.5)
+            # Score: position preference (first section gets bonus) + confidence
+            score = (10 if analysis.section_id == 0 else 0) + confidence * 5
+            
+            if score > best_hero_score:
+                best_hero_score = score
+                best_hero_idx = i
+        
+        # Convert all other hero sections to appropriate categories
+        for i, (idx, analysis) in enumerate(hero_sections):
+            if i != best_hero_idx:
+                # Reclassify based on content
+                text = (analysis.original_text or "").lower()
+                
+                if ("about" in text or "company" in text or "experience" in text or 
+                    "team" in text or "years" in text):
+                    new_category = "about"
+                elif ("service" in text or "offer" in text or "solution" in text):
+                    new_category = "services"
+                elif ("contact" in text or "phone" in text or 
+                      getattr(analysis, 'business_data', {}).get('phones')):
+                    new_category = "contact"
+                else:
+                    new_category = "about"  # Default fallback for hero-like content
+                
+                analyses[idx].category = new_category
+                analyses[idx].confidence = getattr(analysis, 'confidence', 0.5) * 0.8  # Reduce confidence
+                analyses[idx].reasoning = f"Reclassified from hero to {new_category} (only one hero allowed per site)"
+                
+                print(f"   ✅ Converted hero section {analysis.section_id} to {new_category}")
+        
+        print(f"   🎯 Kept section {hero_sections[best_hero_idx][1].section_id} as the primary hero")
     
     # Apply fallback strategies for uncertain content
     improved_analyses = []

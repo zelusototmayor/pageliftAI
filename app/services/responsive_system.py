@@ -337,12 +337,12 @@ class ResponsiveSystem:
         """Build responsive spacing system"""
         css = "/* Responsive Spacing System */\n"
         
-        # Section padding responsive scales
+        # Section padding responsive scales - PROPORTIONAL FOR BUSINESS SITES
         spacing_classes = {
-            'py-section-sm': ('py-8', 'py-12', 'py-16'),    # Small sections
-            'py-section-md': ('py-12', 'py-16', 'py-24'),   # Medium sections  
-            'py-section-lg': ('py-16', 'py-24', 'py-32'),   # Large sections
-            'py-section-xl': ('py-20', 'py-32', 'py-40')    # Extra large sections
+            'py-section-sm': ('py-6', 'py-8', 'py-10'),    # Small sections (96-160px total)
+            'py-section-md': ('py-8', 'py-10', 'py-12'),   # Medium sections (128-192px total) 
+            'py-section-lg': ('py-10', 'py-12', 'py-16'),   # Large sections (160-256px total)
+            'py-section-xl': ('py-12', 'py-16', 'py-20')    # Extra large sections (192-320px total)
         }
         
         for class_name, (mobile, tablet, desktop) in spacing_classes.items():

@@ -909,7 +909,21 @@ a:hover {{
     def _hex_to_rgb(self, hex_color: str) -> tuple:
         """Convert hex color to RGB tuple"""
         hex_color = hex_color.lstrip('#')
-        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+        
+        # Validate hex color format
+        if len(hex_color) not in [3, 6]:
+            return (128, 128, 128)  # Default gray
+        
+        # Validate all characters are valid hex
+        if not all(c.isdigit() or c.lower() in 'abcdef' for c in hex_color):
+            return (128, 128, 128)  # Default gray
+        
+        try:
+            if len(hex_color) == 3:  # Convert #RGB to #RRGGBB
+                hex_color = ''.join([c*2 for c in hex_color])
+            return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+        except (ValueError, IndexError):
+            return (128, 128, 128)  # Default gray
     
     def _rgb_to_hex(self, rgb: tuple) -> str:
         """Convert RGB tuple to hex color"""

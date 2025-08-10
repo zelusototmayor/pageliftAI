@@ -4,6 +4,11 @@
 {% set is_minimal = content_length < 100 %}
 {% set is_rich = content_length > 300 %}
 
+<!-- Proportional sizing based on content - OPTIMIZED defaults -->
+{% set section_padding = sizing.section_padding if sizing else ('py-6' if is_minimal else 'py-10') %}
+{% set height_class = sizing.height_class if sizing else ('min-h-[300px]' if is_minimal else 'min-h-[400px]') %}
+{% set container_spacing = sizing.container_spacing if sizing else 'space-y-6' %}
+
 <!-- Extract brand colors with fallbacks -->
 {% set primary_color = brand_identity.colors.primary or '#3B82F6' %}
 {% set secondary_color = brand_identity.colors.secondary or '#64748B' %}
@@ -72,7 +77,7 @@
   {% endif %}
 </style>
 
-<section class="hero-section relative min-h-screen flex items-center justify-center overflow-hidden py-section-lg">
+<section class="hero-section relative {{ height_class }} flex items-center justify-center overflow-hidden {{ section_padding }}">
   <!-- Dynamic Background -->
   {% if has_hero_image %}
     <!-- Hero with Image Background -->
@@ -116,11 +121,11 @@
           Available 24/7 • Professional Service
         </div>
         
-        <h1 class="hero-title text-responsive-lg font-bold leading-none mb-8 tracking-tight">
+        <h1 class="hero-title text-responsive-lg font-bold leading-none mb-8 tracking-tight text-center">
           {{ heading or 'Professional Service You Can Trust' }}
         </h1>
         
-        <p class="hero-subtitle text-xl lg:text-2xl mb-12 leading-relaxed max-w-3xl mx-auto">
+        <p class="hero-subtitle text-xl lg:text-2xl mb-12 leading-relaxed max-w-3xl mx-auto text-center break-words overflow-hidden">
           {{ short_copy or original_text or 'Expert solutions for your home and business needs. Available 24/7 for emergency service.' }}
         </p>
         
@@ -170,7 +175,7 @@
     
     {% elif is_rich %}
       <!-- RICH LAYOUT: Two-column with detailed content -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center min-h-screen py-20">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center {{ container_spacing }}">
         <!-- Content Column -->
         <div class="text-left order-2 lg:order-1">
           <!-- Premium Badge -->
@@ -181,7 +186,7 @@
             Premium Professional Service
           </div>
           
-          <h1 class="hero-title text-5xl sm:text-6xl lg:text-7xl font-bold leading-none mb-8 tracking-tight">
+          <h1 class="hero-title text-5xl sm:text-6xl lg:text-7xl font-bold leading-none mb-8 tracking-tight text-center lg:text-left">
             {{ heading or 'Expert Solutions for Every Need' }}
           </h1>
           
@@ -290,7 +295,7 @@
                 <img 
                   src="{{ hero_image.url }}" 
                   alt="{{ hero_image.alt_text }}"
-                  class="w-full h-96 lg:h-[600px] object-cover"
+                  class="w-full h-64 sm:h-80 lg:h-96 object-cover"
                   {% if not hero_image.lazy_load %}fetchpriority="high"{% endif %}
                 >
                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
@@ -312,15 +317,15 @@
               </div>
               
               <!-- Decorative elements -->
-              <div class="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-20 animate-pulse"></div>
-              <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 animate-pulse delay-1000"></div>
+              <div class="absolute -top-6 -right-6 w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-20 animate-pulse"></div>
+              <div class="absolute -bottom-4 -left-4 w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 animate-pulse delay-1000"></div>
             </div>
           {% else %}
             <!-- Placeholder with modern design -->
             <div class="relative">
               <div class="bg-white/10 backdrop-blur-md rounded-3xl p-16 text-center transform rotate-3 hover:rotate-0 transition-transform duration-500 border border-white/20">
                 <div class="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-white/20 to-white/5 rounded-3xl flex items-center justify-center">
-                  <svg class="w-16 h-16 text-white/60" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-12 h-12 text-white/60" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
                     <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
                   </svg>
@@ -335,7 +340,7 @@
     
     {% else %}
       <!-- STANDARD LAYOUT: Balanced design -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen py-16">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center {{ container_spacing }}">
         <!-- Content Column -->
         <div class="text-left">
           <!-- Standard Badge -->
@@ -344,11 +349,11 @@
             Professional {{ industry|title }} Service
           </div>
           
-          <h1 class="hero-title text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 tracking-tight">
+          <h1 class="hero-title text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 tracking-tight text-center lg:text-left">
             {{ heading or 'Professional Service You Can Trust' }}
           </h1>
           
-          <p class="hero-subtitle text-xl lg:text-2xl mb-10 leading-relaxed">
+          <p class="hero-subtitle text-xl lg:text-2xl mb-10 leading-relaxed text-center lg:text-left break-words overflow-hidden">
             {{ short_copy or original_text or 'Expert solutions for your home and business needs. Available 24/7 for emergency service.' }}
           </p>
           
@@ -404,7 +409,7 @@
               <img 
                 src="{{ hero_image.url }}" 
                 alt="{{ hero_image.alt_text }}"
-                class="w-full h-96 lg:h-[500px] object-cover"
+                class="w-full h-64 sm:h-72 lg:h-80 object-cover"
                 {% if not hero_image.lazy_load %}fetchpriority="high"{% endif %}
               >
               <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
@@ -412,7 +417,7 @@
           {% else %}
             <!-- Modern placeholder -->
             <div class="bg-white/10 backdrop-blur-md rounded-3xl p-12 text-center transform rotate-2 hover:rotate-0 transition-transform duration-300 border border-white/20">
-              <svg class="w-24 h-24 mx-auto mb-6 text-white/40" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-16 h-16 mx-auto mb-6 text-white/40" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/>
                 <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
               </svg>

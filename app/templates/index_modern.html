@@ -45,6 +45,36 @@
       scroll-behavior: smooth;
     }
     
+    /* Global text alignment and overflow improvements */
+    h1, h2, h3, h4, h5, h6 {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
+    }
+    
+    p, div {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    
+    /* Responsive text alignment for better mobile experience */
+    @media (max-width: 640px) {
+      h1, h2, h3, h4, h5, h6 {
+        text-align: center !important;
+      }
+      
+      .hero-subtitle, .service-description {
+        text-align: center !important;
+      }
+    }
+    
+    /* Prevent text overflow in containers */
+    .text-container {
+      max-width: 100%;
+      overflow-x: hidden;
+      word-break: break-word;
+    }
+    
     /* Loading state styles */
     .loading {
       opacity: 0;
@@ -156,7 +186,8 @@
             is_hybrid=section.is_hybrid, 
             hybrid_categories=section.hybrid_categories,
             brand_identity=brand_identity,
-            typography=section.typography
+            typography=typography,
+            sizing=section.sizing
           %}
             {% if section.category == 'hero' %}
               {% include 'blocks/hero_modern.html' %}
@@ -192,7 +223,8 @@
             is_hybrid=section.is_hybrid, 
             hybrid_categories=section.hybrid_categories,
             brand_identity=brand_identity,
-            typography=section.typography
+            typography=typography,
+            sizing=section.sizing
           %}
             {% include 'blocks/mixed_responsive.html' %}
           {% endwith %}
@@ -211,7 +243,8 @@
             classes=section.classes, 
             id=section.id,
             brand_identity=brand_identity,
-            typography=section.typography
+            typography=typography,
+            sizing=section.sizing
           %}
             {% include 'blocks/other.html' %}
           {% endwith %}

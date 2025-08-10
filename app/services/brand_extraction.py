@@ -108,15 +108,32 @@ class VisualStyle:
             self.layout_patterns = ['grid', 'flex', 'stack']
 
 @dataclass
+class Brand:
+    """Basic brand information"""
+    name: str = "Professional Services"
+    description: str = "Quality business solutions you can trust"
+    industry: str = "business"
+    tagline: str = ""
+
+@dataclass
 class BrandIdentity:
     """Complete brand identity extracted from original website"""
     colors: ColorPalette
     typography: Typography
     style: VisualStyle
+    brand: Brand = None
     industry: str = "business"
     tone: str = "professional"
     layout_preference: str = "modern"
     image_style: str = "photography"
+    
+    def __post_init__(self):
+        if self.brand is None:
+            self.brand = Brand(
+                name="Professional Services",
+                description="Quality business solutions you can trust",
+                industry=self.industry
+            )
 
 class BrandExtractor:
     """Extracts comprehensive brand identity from original websites"""
@@ -210,16 +227,17 @@ class BrandExtractor:
         """Extract and analyze color palette from CSS and HTML"""
         colors = []
         
-        # Extract colors from CSS
+        # Extract colors from CSS - improved patterns to avoid partial matches
         color_patterns = [
-            r'color:\s*([#\w\(\),\s\%\.]+)',
-            r'background-color:\s*([#\w\(\),\s\%\.]+)',
-            r'background:\s*([#\w\(\),\s\%\.]+)',
-            r'border-color:\s*([#\w\(\),\s\%\.]+)',
-            r'#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})',
+            r'color:\s*([#][0-9A-Fa-f]{3,6}|rgb[a]?\([^\)]+\)|hsl[a]?\([^\)]+\)|\b(?:red|blue|green|black|white|gray|grey|yellow|orange|purple|pink|brown|cyan|magenta|lime|navy|teal|olive|silver|maroon|aqua|fuchsia)\b)',
+            r'background-color:\s*([#][0-9A-Fa-f]{3,6}|rgb[a]?\([^\)]+\)|hsl[a]?\([^\)]+\)|\b(?:red|blue|green|black|white|gray|grey|yellow|orange|purple|pink|brown|cyan|magenta|lime|navy|teal|olive|silver|maroon|aqua|fuchsia)\b)',
+            r'background:\s*([#][0-9A-Fa-f]{3,6}|rgb[a]?\([^\)]+\)|hsl[a]?\([^\)]+\)|\b(?:red|blue|green|black|white|gray|grey|yellow|orange|purple|pink|brown|cyan|magenta|lime|navy|teal|olive|silver|maroon|aqua|fuchsia)\b)',
+            r'border-color:\s*([#][0-9A-Fa-f]{3,6}|rgb[a]?\([^\)]+\)|hsl[a]?\([^\)]+\)|\b(?:red|blue|green|black|white|gray|grey|yellow|orange|purple|pink|brown|cyan|magenta|lime|navy|teal|olive|silver|maroon|aqua|fuchsia)\b)',
+            r'#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})\b',  # Only complete hex colors
             r'rgb\([^\)]+\)',
             r'rgba\([^\)]+\)',
             r'hsl\([^\)]+\)',
+            r'hsla\([^\)]+\)',
         ]
         
         all_styles = css_content + " ".join(inline_styles)
@@ -228,12 +246,17 @@ class BrandExtractor:
             matches = re.findall(pattern, all_styles, re.IGNORECASE)
             colors.extend(matches)
         
-        # Clean and categorize colors
+        # Clean and categorize colors with robust error handling
         cleaned_colors = []
         for color in colors:
-            color = color.strip().lower()
-            if self._is_valid_color(color):
-                cleaned_colors.append(color)
+            try:
+                color = str(color).strip().lower()
+                if color and len(color) > 0 and self._is_valid_color(color):
+                    cleaned_colors.append(color)
+            except (AttributeError, TypeError, ValueError) as e:
+                # Skip invalid color entries
+                print(f"Skipping invalid color entry: {color} - {e}")
+                continue
         
         # Analyze color usage frequency
         color_counter = Counter(cleaned_colors)
@@ -318,18 +341,35 @@ class BrandExtractor:
     
     def _is_valid_color(self, color: str) -> bool:
         """Check if color string is valid and not a common non-color value"""
+        if not color or not isinstance(color, str):
+            return False
+            
+        color = color.strip().lower()
+        if len(color) == 0:
+            return False
+            
         invalid_colors = ['transparent', 'inherit', 'initial', 'unset', 'none', 'auto', '0', '']
-        if color in invalid_colors or len(color) == 0:
+        if color in invalid_colors:
             return False
         
         # Additional validation for hex colors
         if color.startswith('#'):
             hex_part = color[1:].strip()
-            if len(hex_part) in [3, 6]:
-                return all(c.isdigit() or c.lower() in 'abcdef' for c in hex_part)
+            if len(hex_part) not in [3, 6]:
+                return False
+            return all(c.isdigit() or c.lower() in 'abcdef' for c in hex_part)
         
-        # Allow rgb, rgba, hsl functions and named colors
-        if any(color.startswith(prefix) for prefix in ['rgb', 'rgba', 'hsl', 'hsla']) or color.isalpha():
+        # Allow rgb, rgba, hsl functions
+        if any(color.startswith(prefix + '(') for prefix in ['rgb', 'rgba', 'hsl', 'hsla']):
+            return True
+        
+        # Allow standard CSS named colors
+        css_named_colors = {
+            'red', 'blue', 'green', 'black', 'white', 'gray', 'grey', 'yellow', 
+            'orange', 'purple', 'pink', 'brown', 'cyan', 'magenta', 'lime', 
+            'navy', 'teal', 'olive', 'silver', 'maroon', 'aqua', 'fuchsia'
+        }
+        if color in css_named_colors:
             return True
             
         return False
@@ -365,7 +405,7 @@ class BrandExtractor:
         """Find the primary brand color by analyzing button, header, and CTA elements"""
         
         # Look for colors in important elements
-        primary_selectors = ['button', '.btn', '.cta', 'header', '.header', '.primary', '.brand']
+        primary_selectors = ['button', '.btn', '.cta', 'header', '.header', '.primary', '.brand', 'nav', '.nav', '.logo', '#logo']
         primary_candidates = []
         
         for selector in primary_selectors:
@@ -377,13 +417,20 @@ class BrandExtractor:
                     color_matches = re.findall(r'(?:color|background-color|background):\s*([#\w\(\),\s\%\.]+)', style)
                     primary_candidates.extend(color_matches)
         
-        # Find most common color in primary contexts
+        # Find most common color in primary contexts that isn't neutral
         if primary_candidates:
             primary_counter = Counter(primary_candidates)
-            return primary_counter.most_common(1)[0][0]
+            for color, count in primary_counter.most_common():
+                if not self._is_neutral_or_background_color(color):
+                    return color
         
-        # Fallback to first available color
-        return colors[0] if colors else "#3B82F6"
+        # Smart fallback: find first non-neutral, non-background color
+        for color in colors:
+            if not self._is_neutral_or_background_color(color):
+                return color
+        
+        # Last resort: use a good default brand color instead of white
+        return "#2563EB"  # Nice blue instead of generic gray
     
     def _find_secondary_color(self, colors: List[str], primary_color: str) -> str:
         """Find secondary color (usually gray or a complementary color)"""
@@ -420,6 +467,42 @@ class BrandExtractor:
         neutral_keywords = ['gray', 'grey', 'slate', 'stone', 'neutral', 'zinc']
         return any(keyword in color.lower() for keyword in neutral_keywords)
     
+    def _is_neutral_or_background_color(self, color: str) -> bool:
+        """Check if color is neutral, white, black, or typical background color - unsuitable as primary"""
+        if not color:
+            return True
+            
+        color = color.strip().lower()
+        
+        # Check for obvious neutral/background colors
+        neutral_colors = {
+            '#ffffff', '#fff', 'white', '#000000', '#000', 'black', 
+            'transparent', 'inherit', 'initial', 'unset', 'none'
+        }
+        
+        if color in neutral_colors:
+            return True
+            
+        # Check for gray variations
+        if self._is_neutral_color(color):
+            return True
+            
+        # Check for very light colors that would be poor primary colors
+        if color.startswith('#'):
+            try:
+                hex_color = color[1:].strip()
+                if len(hex_color) == 6 and all(c.isdigit() or c.lower() in 'abcdef' for c in hex_color):
+                    # Convert to RGB and check if too light (all values > 240)
+                    r = int(hex_color[0:2], 16)
+                    g = int(hex_color[2:4], 16)
+                    b = int(hex_color[4:6], 16)
+                    if r > 240 and g > 240 and b > 240:
+                        return True
+            except (ValueError, IndexError):
+                pass
+                
+        return False
+    
     def _is_bright_color(self, color: str) -> bool:
         """Check if color is bright/vibrant"""
         bright_keywords = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink']
@@ -432,12 +515,18 @@ class BrandExtractor:
             if color.startswith('#'):
                 # Remove # and clean the color
                 hex_color = color[1:].strip()
+                
+                # Validate hex_color format and characters
+                if len(hex_color) not in [3, 6]:
+                    return False
+                if not all(c.isdigit() or c.lower() in 'abcdef' for c in hex_color):
+                    return False
+                    
                 if len(hex_color) == 3:  # #RGB
-                    return all(int(c, 16) < 8 for c in hex_color if c.isdigit() or c.lower() in 'abcdef')
+                    return all(int(c, 16) < 8 for c in hex_color)
                 elif len(hex_color) == 6:  # #RRGGBB
-                    return all(int(hex_color[i:i+2], 16) < 128 for i in range(0, 6, 2) 
-                             if all(c.isdigit() or c.lower() in 'abcdef' for c in hex_color[i:i+2]))
-        except (ValueError, IndexError):
+                    return all(int(hex_color[i:i+2], 16) < 128 for i in range(0, 6, 2))
+        except (ValueError, IndexError, TypeError):
             # If parsing fails, fall back to keyword detection
             pass
         return 'dark' in color.lower() or 'black' in color.lower()
@@ -655,6 +744,28 @@ class BrandExtractor:
         )
 
 def extract_brand_identity(url: str, html: str) -> BrandIdentity:
-    """Convenience function for brand extraction"""
-    extractor = BrandExtractor()
-    return extractor.extract_brand_identity(url, html)
+    """Convenience function for brand extraction with robust error handling"""
+    try:
+        extractor = BrandExtractor()
+        return extractor.extract_brand_identity(url, html)
+    except Exception as e:
+        print(f"Brand extraction failed for {url}: {e}")
+        # Return default brand identity
+        return BrandIdentity(
+            colors=ColorPalette(
+                primary="#3B82F6",
+                secondary="#64748B", 
+                accent="#F59E0B",
+                text_primary="#111827",
+                background="#FFFFFF"
+            ),
+            typography=Typography(
+                primary_font="Inter, sans-serif",
+                heading_font="Inter, sans-serif"
+            ),
+            style=VisualStyle(),
+            brand=Brand(
+                name="Professional Services", 
+                description="Quality business solutions you can trust"
+            )
+        )

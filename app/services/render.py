@@ -11,6 +11,7 @@ from app.config import settings
 from .typography import create_typography_system
 from .image_processing import process_section_images
 from .css_generator import generate_brand_css
+from .proportional_sizing import apply_proportional_sizing_to_sections
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), '../templates')
 
@@ -28,13 +29,16 @@ CATEGORY_BLOCKS = {
     'contact_mixed': 'blocks/mixed_responsive.html',
 }
 
-def prepare_section_for_rendering(section: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_section_for_rendering(section: Dict[str, Any], brand_identity: Dict[str, Any] = None, typography = None) -> Dict[str, Any]:
     """Prepare section data for template rendering with enhanced context"""
     
     # Extract business data for template context
     business_data = section.get('business_data', {})
     phones = business_data.get('phones', [])
     emails = business_data.get('emails', [])
+    
+    # Extract sizing data from proportional sizing system
+    sizing_data = section.get('sizing', {})
     
     # Create enhanced template context
     template_context = {
@@ -52,6 +56,9 @@ def prepare_section_for_rendering(section: Dict[str, Any]) -> Dict[str, Any]:
         'email': emails[0] if emails else '#',
         'business_data': business_data,
         
+        # Proportional sizing data for templates - CRITICAL FIX
+        'sizing': sizing_data,
+        
         # Enhanced analysis data
         'confidence': section.get('confidence', 0.5),
         'reasoning': section.get('reasoning', ''),
@@ -59,7 +66,61 @@ def prepare_section_for_rendering(section: Dict[str, Any]) -> Dict[str, Any]:
         'hybrid_categories': section.get('hybrid_categories', []),
     }
     
+    # Add image_set with safe defaults if not provided via brand_identity
+    if brand_identity:
+        try:
+            from .image_processing import process_section_images
+            image_set = process_section_images(section, brand_identity)
+            template_context['image_set'] = {
+                'primary_image': image_set.primary_image,
+                'all_images': image_set.images,
+                'hero_images': image_set.hero_images,
+                'gallery_images': image_set.gallery_images,
+                'icon_images': image_set.icon_images,
+            }
+        except Exception as e:
+            # Fallback to safe defaults if image processing fails
+            template_context['image_set'] = create_default_image_set()
+    else:
+        # Provide safe defaults when brand_identity not available
+        template_context['image_set'] = create_default_image_set()
+    
+    # Add typography with safe defaults if not provided
+    if typography:
+        try:
+            template_context['typography'] = {
+                'primary_font': typography.primary_font,
+                'heading_font': typography.heading_font,
+                'semantic_styles': typography.get_semantic_text_styles() if hasattr(typography, 'get_semantic_text_styles') else {},
+            }
+        except Exception as e:
+            # Fallback to safe defaults if typography fails
+            template_context['typography'] = create_default_typography()
+    else:
+        # Provide safe defaults when typography not available
+        template_context['typography'] = create_default_typography()
+    
     return template_context
+
+
+def create_default_image_set() -> Dict[str, Any]:
+    """Create safe default image_set to prevent template errors"""
+    return {
+        'primary_image': None,
+        'all_images': [],
+        'hero_images': [],
+        'gallery_images': [],
+        'icon_images': [],
+    }
+
+
+def create_default_typography() -> Dict[str, Any]:
+    """Create safe default typography to prevent template errors"""
+    return {
+        'primary_font': 'Inter, system-ui, sans-serif',
+        'heading_font': 'Inter, system-ui, sans-serif',
+        'semantic_styles': {},
+    }
 
 def render_site(sections: List[Dict[str, Any]], title: str = None) -> str:
     env = Environment(
@@ -120,31 +181,14 @@ def render_site_with_brand(sections: List[Dict[str, Any]], brand_identity: Dict[
     # Generate dynamic CSS based on brand identity
     brand_css = generate_brand_css(brand_identity, typography)
     
+    # Apply proportional sizing to all sections
+    sections_with_sizing = apply_proportional_sizing_to_sections(sections)
+    
     # Process sections with enhanced context including images and typography
     enhanced_sections = []
-    for section in sections:
-        # Process images for this section
-        image_set = process_section_images(section, brand_identity)
-        
-        # Prepare section with all enhancements
-        enhanced_section = prepare_section_for_rendering(section)
-        
-        # Add processed images
-        enhanced_section['image_set'] = {
-            'primary_image': image_set.primary_image,
-            'all_images': image_set.images,
-            'hero_images': image_set.hero_images,
-            'gallery_images': image_set.gallery_images,
-            'icon_images': image_set.icon_images,
-        }
-        
-        # Add typography context
-        enhanced_section['typography'] = {
-            'primary_font': typography.primary_font,
-            'heading_font': typography.heading_font,
-            'semantic_styles': typography.get_semantic_text_styles(),
-        }
-        
+    for section in sections_with_sizing:
+        # Prepare section with all enhancements including image_set and typography
+        enhanced_section = prepare_section_for_rendering(section, brand_identity, typography)
         enhanced_sections.append(enhanced_section)
     
     # Aggregate business data from all sections for global template context

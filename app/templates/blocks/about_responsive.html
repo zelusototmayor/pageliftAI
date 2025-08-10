@@ -5,7 +5,10 @@
 {% set is_minimal = content_length < 100 %}
 {% set is_rich = content_length > 300 %}
 
-<section class="{% if is_minimal %}py-16{% elif is_rich %}py-24{% else %}py-20{% endif %} bg-gradient-to-br from-blue-50 to-white">
+<!-- Proportional sizing based on content -->
+{% set section_padding = sizing.section_padding if sizing else ('py-6' if is_minimal else 'py-8') %}
+
+<section class="{{ section_padding }} bg-gradient-to-br from-blue-50 to-white">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     
     {% if is_minimal %}
@@ -15,7 +18,7 @@
           <span class="inline-block px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold mb-4">
             About Us
           </span>
-          <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-6">
+          <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-6 text-center">
             {{ heading or 'Your Trusted Partner' }}
           </h2>
         </div>
@@ -33,7 +36,7 @@
           </div>
         {% endif %}
         
-        <p class="text-lg text-gray-600 leading-relaxed mb-8">
+        <p class="text-lg text-gray-600 leading-relaxed mb-8 text-center break-words overflow-hidden">
           {{ short_copy or original_text or 'We are dedicated professionals committed to providing exceptional service and solutions for your needs.' }}
         </p>
         
@@ -57,7 +60,7 @@
               <span class="inline-block px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold mb-4">
                 About Our Company
               </span>
-              <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
+              <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6 text-center lg:text-left">
                 {{ heading or 'Your Trusted Service Partner' }}
               </h2>
             </div>
@@ -148,7 +151,7 @@
             {% if has_images %}
               <div class="relative">
                 <div class="relative rounded-2xl overflow-hidden shadow-2xl">
-                  <img src="{{ img_urls[0] }}" alt="About Us" class="w-full h-96 lg:h-[600px] object-cover"/>
+                  <img src="{{ img_urls[0] }}" alt="About Us" class="w-full h-64 sm:h-80 lg:h-96 object-cover"/>
                   <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 </div>
                 
@@ -200,7 +203,7 @@
           
           <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div class="text-center">
-              <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                 </svg>
@@ -211,7 +214,7 @@
             </div>
             
             <div class="text-center">
-              <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                 </svg>
@@ -222,7 +225,7 @@
             </div>
             
             <div class="text-center">
-              <div class="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                 </svg>
@@ -233,7 +236,7 @@
             </div>
             
             <div class="text-center">
-              <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                 </svg>
@@ -345,7 +348,7 @@
           {% if has_images %}
             <div class="relative">
               <div class="relative rounded-2xl overflow-hidden shadow-2xl">
-                <img src="{{ img_urls[0] }}" alt="About Us" class="w-full h-96 lg:h-[600px] object-cover"/>
+                <img src="{{ img_urls[0] }}" alt="About Us" class="w-full h-64 sm:h-80 lg:h-96 object-cover"/>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
               </div>
               
@@ -368,7 +371,7 @@
           {% else %}
             <!-- Standard placeholder when no image -->
             <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-12 text-white text-center shadow-2xl">
-              <svg class="w-24 h-24 mx-auto mb-6 text-blue-200" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-16 h-16 mx-auto mb-6 text-blue-200" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
               </svg>
               <h3 class="text-2xl font-bold mb-4">Professional Team</h3>

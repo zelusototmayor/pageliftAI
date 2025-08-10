@@ -232,3 +232,4 @@ Thumbs.db
 # Project specific
 pgdata/
 minio-data/
+debug_output/
